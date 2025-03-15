@@ -6,6 +6,8 @@ FROM node:18-alpine AS builder
 # Ustawiamy katalog roboczy wewnątrz kontenera
 WORKDIR /app
 
+ENV NODE_OPTIONS=--openssl-legacy-provider
+
 # Kopiujemy pliki package.json i package-lock.json
 COPY package*.json ./
 
