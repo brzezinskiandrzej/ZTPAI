@@ -2,7 +2,8 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Playlist from "./pages/Playlist";
 import LandingPage from "./components/LandingPage";
-// Note: These components would need to be created
+import InputDesign from "./pages/InputDesign";
+
 import { Navigate } from "react-router-dom";
 import "./App.css";
 
@@ -12,15 +13,9 @@ function App() {
       <div className="app">
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/input" element={<InputDesign />} />
           <Route path="/playlists/:userId" element={<Playlist />} />
-          <Route
-            path="/mood-check"
-            element={
-              <div className="placeholder-page">
-                Mood Check Page (To be implemented)
-              </div>
-            }
-          />
+
           <Route
             path="/saved"
             element={

@@ -52,7 +52,6 @@ function Playlist() {
     try {
       await toggleFavorite(trackId, !isFavorite);
 
-      // Update the playlist state to reflect the change
       setPlaylist((prevPlaylist) => ({
         ...prevPlaylist,
         tracks: prevPlaylist.tracks.map((track) =>

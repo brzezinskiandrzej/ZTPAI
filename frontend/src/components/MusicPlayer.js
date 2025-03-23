@@ -13,7 +13,6 @@ const MusicPlayer = ({ song }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
-    // Reset player state when a new song is loaded
     if (song) {
       setIsPlaying(true);
       setProgress(0);
@@ -22,13 +21,11 @@ const MusicPlayer = ({ song }) => {
     }
   }, [song]);
 
-  // Simulate time progress when playing
+  
   useEffect(() => {
     let interval;
     if (isPlaying) {
       interval = setInterval(() => {
-        // This is a simplified simulation
-        // In a real app, this would sync with the actual audio element
         setProgress((prev) => {
           if (prev >= 100) {
             setIsPlaying(false);
@@ -38,7 +35,6 @@ const MusicPlayer = ({ song }) => {
           return prev + 0.5;
         });
 
-        // Update current time based on progress
         const durationSecs = convertTimeToSeconds(duration);
         const currentSecs = Math.floor((durationSecs * progress) / 100);
         setCurrentTime(formatTime(currentSecs));
@@ -66,7 +62,6 @@ const MusicPlayer = ({ song }) => {
     const percentage = (x / rect.width) * 100;
     setProgress(Math.min(Math.max(percentage, 0), 100));
 
-    // Update current time based on new progress
     const durationSecs = convertTimeToSeconds(duration);
     const currentSecs = Math.floor((durationSecs * percentage) / 100);
     setCurrentTime(formatTime(currentSecs));
@@ -84,21 +79,18 @@ const MusicPlayer = ({ song }) => {
     setVolume(value);
   };
 
-  // Helper function to convert time format (e.g., "3:45") to seconds
   const convertTimeToSeconds = (timeString) => {
     if (!timeString) return 0;
     const [minutes, seconds] = timeString.split(":").map(Number);
     return minutes * 60 + seconds;
   };
 
-  // Helper function to format seconds to "mm:ss"
   const formatTime = (totalSeconds) => {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
     return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  // If no song is selected, don't render the player
   if (!song) return null;
 
   const isMobile = window.innerWidth <= 640;

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "./LandingPage.css";
 
 function LandingPage() {
@@ -90,7 +91,9 @@ function LandingPage() {
               feelings. Ready to vibe?
             </div>
             <div className="hero-cta-container">
-              <div className="hero-cta-button">Find Music</div>
+              <Link to="/input" className="hero-cta-button">
+                Find Music
+              </Link>
             </div>
           </div>
         </section>

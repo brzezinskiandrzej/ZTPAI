@@ -77,6 +77,78 @@ const users = [
       },
     ],
   },
+  {
+    id: "2",
+    username: "Barbara",
+    playlists: [
+      {
+        id: "today-moody",
+        name: "Your Thursday's Happy Playlist",
+        tracks: [
+          {
+            id: "1",
+            title: "Abecadlo",
+            artist: "Coldplay",
+            artwork: "https://placehold.co/40x40/607d8b/607d8b",
+            playCount: "460,228,511",
+            duration: "3:27",
+            isFavorite: false,
+            url: "https://www.mfiles.co.uk/mp3-downloads/gs-cd-track2.mp3",
+          },
+          {
+            id: "2",
+            title: "Dance Party",
+            artist: "Coldplay",
+            artwork: "https://placehold.co/40x40/673ab7/673ab7",
+            playCount: "460,228,511",
+            duration: "3:27",
+            isFavorite: false,
+            url: "https://www.mfiles.co.uk/mp3-downloads/i-do-like-to-be-beside-the-seaside.mp3",
+          },
+          {
+            id: "3",
+            title: "The Doctor's Lab",
+            artist: "Coldplay",
+            artwork: "https://placehold.co/40x40/90a4ae/90a4ae",
+            playCount: "460,228,511",
+            duration: "3:27",
+            isFavorite: false,
+            url: "https://www.mfiles.co.uk/mp3-downloads/polly-perkins-of-paddington-green.mp3",
+          },
+          {
+            id: "4",
+            title: "Fly To You",
+            artist: "Coldplay",
+            artwork: "https://placehold.co/40x40/f44336/f44336",
+            playCount: "460,228,511",
+            duration: "3:27",
+            isFavorite: false,
+            url: "https://www.mfiles.co.uk/mp3-downloads/the-man-who-broke-the-bank-at-monte-carlo.mp3",
+          },
+          {
+            id: "5",
+            title: "Drumbass",
+            artist: "Coldplay",
+            artwork: "https://placehold.co/40x40/eceff1/eceff1",
+            playCount: "460,228,511",
+            duration: "3:27",
+            isFavorite: false,
+            url: "https://www.mfiles.co.uk/mp3-downloads/its-a-long-long-way-to-tipperary.mp3",
+          },
+          {
+            id: "6",
+            title: "Sadness Paradox",
+            artist: "Ed Sheeran",
+            artwork: "https://placehold.co/40x40/9c27b0/9c27b0",
+            playCount: "1,952,015,881",
+            duration: "4:23",
+            isFavorite: false,
+            url: "https://www.mfiles.co.uk/mp3-downloads/lets-all-go-down-the-strand.mp3",
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 router.get("/playlist/:userId", (req: Request, res: Response) => {
@@ -99,7 +171,7 @@ router.get("/playlist/:userId", (req: Request, res: Response) => {
 
 router.post("/tracks/:trackId/play", (req: Request, res: Response) => {
   const { trackId } = req.params;
-  const userId = "1"; // In a real app, this would come from authentication
+  const userId = "1"; 
 
   const user = users.find((u) => u.id === userId);
   if (!user) {

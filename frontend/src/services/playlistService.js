@@ -1,12 +1,10 @@
-// This service handles API calls related to playlists
 
-// Base API URL - replace with your actual API endpoint
 const API_BASE_URL = "/api";
 
 
 export const fetchUserPlaylist = async (userId) => {
   try {
-    // For development/testing, you can use this mock data
+    // For development/testing
     // if (
     //   process.env.NODE_ENV === "development" &&
     //   !process.env.REACT_APP_USE_API
@@ -46,7 +44,6 @@ export const fetchUserPlaylist = async (userId) => {
     return await response.json();
   } catch (error) {
     console.error("Error fetching playlist:", error);
-    // Return mock data as fallback in case of error
     //return getMockPlaylist();
     throw error;
   }
