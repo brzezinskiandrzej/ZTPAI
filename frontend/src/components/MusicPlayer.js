@@ -1,30 +1,63 @@
 import React, { useState, useEffect } from "react";
 import "./MusicPlayer.css";
 
-const MusicPlayer = ({ playlist = [], username = "User" }) => {
-  const [currentSong, setCurrentSong] = useState(null);
+const MusicPlayer = ({ song }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState("00:00");
-  const [duration, setDuration] = useState("00:00");
+  const [duration, setDuration] = useState(song?.duration || "00:00");
   const [volume, setVolume] = useState(50);
   const [shuffle, setShuffle] = useState(false);
   const [repeat, setRepeat] = useState(false);
   const [showSongDetails, setShowSongDetails] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  useEffect(() => {
+    // Reset player state when a new song is loaded
+    if (song) {
+      setIsPlaying(true);
+      setProgress(0);
+      setCurrentTime("00:00");
+      setDuration(song.duration);
+    }
+  }, [song]);
+
+  // Simulate time progress when playing
+  useEffect(() => {
+    let interval;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        // This is a simplified simulation
+        // In a real app, this would sync with the actual audio element
+        setProgress((prev) => {
+          if (prev >= 100) {
+            setIsPlaying(false);
+            clearInterval(interval);
+            return 100;
+          }
+          return prev + 0.5;
+        });
+
+        // Update current time based on progress
+        const durationSecs = convertTimeToSeconds(duration);
+        const currentSecs = Math.floor((durationSecs * progress) / 100);
+        setCurrentTime(formatTime(currentSecs));
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
+  }, [isPlaying, duration]);
 
   const togglePlay = () => {
     setIsPlaying(!isPlaying);
   };
 
-  const selectSong = (song) => {
-    setCurrentSong(song);
-    setIsPlaying(true);
-    setProgress(0);
-    setDuration(song.duration || "00:00");
-  };
-
   const toggleSongDetails = () => {
     setShowSongDetails(!showSongDetails);
+  };
+
+  const toggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
   };
 
   const updateProgress = (e) => {
@@ -32,6 +65,11 @@ const MusicPlayer = ({ playlist = [], username = "User" }) => {
     const x = e.clientX - rect.left;
     const percentage = (x / rect.width) * 100;
     setProgress(Math.min(Math.max(percentage, 0), 100));
+
+    // Update current time based on new progress
+    const durationSecs = convertTimeToSeconds(duration);
+    const currentSecs = Math.floor((durationSecs * percentage) / 100);
+    setCurrentTime(formatTime(currentSecs));
   };
 
   const toggleShuffle = () => {
@@ -46,181 +84,131 @@ const MusicPlayer = ({ playlist = [], username = "User" }) => {
     setVolume(value);
   };
 
-  // Simulate time progress when playing
-  useEffect(() => {
-    let interval;
-    if (isPlaying && currentSong) {
-      interval = setInterval(() => {
-        // Convert duration string to seconds
-        const durationParts = currentSong.duration.split(":");
-        const durationInSeconds =
-          parseInt(durationParts[0]) * 60 + parseInt(durationParts[1]);
+  // Helper function to convert time format (e.g., "3:45") to seconds
+  const convertTimeToSeconds = (timeString) => {
+    if (!timeString) return 0;
+    const [minutes, seconds] = timeString.split(":").map(Number);
+    return minutes * 60 + seconds;
+  };
 
-        // Calculate current time based on progress
-        const currentTimeInSeconds = Math.floor(
-          (progress / 100) * durationInSeconds,
-        );
-        const minutes = Math.floor(currentTimeInSeconds / 60);
-        const seconds = currentTimeInSeconds % 60;
+  // Helper function to format seconds to "mm:ss"
+  const formatTime = (totalSeconds) => {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  };
 
-        setCurrentTime(
-          `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`,
-        );
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying, progress, currentSong]);
+  // If no song is selected, don't render the player
+  if (!song) return null;
+
+  const isMobile = window.innerWidth <= 640;
 
   return (
-    <div className="music-player">
-      <div className="player-container">
-        <header className="player-header">
-          <div className="logo">Logo</div>
-          <nav className="nav-menu">
-            <div className="nav-item">Playlists</div>
-            <div className="nav-item mood-check">Mood Check</div>
-            <div className="nav-item">Saved</div>
-          </nav>
-          <div className="user-avatar"></div>
-        </header>
-
-        <main className="player-content">
-          <div className="user-info">
-            <div className="user-avatar"></div>
-            <div className="username">{username}</div>
-          </div>
-
-          <h1 className="playlist-title">Your Today's Moody Playlist</h1>
-
-          <div className="playlist-container">
-            {playlist.map((song, index) => (
-              <div
-                key={index}
-                className={`playlist-item ${currentSong && currentSong.id === song.id ? "active" : ""}`}
-                onClick={() => selectSong(song)}
-              >
-                <div className="track-number">{index + 1}</div>
-                <div className="track-artwork">
-                  <img src={song.artwork} alt={`${song.title} artwork`} />
-                </div>
-                <div className="track-title">{song.title}</div>
-                <div className="track-stats">
-                  <div className="play-count-icon"></div>
-                  <div className="play-count">{song.playCount}</div>
-                </div>
-                <div className="track-duration">{song.duration}</div>
-                <div className="track-favorite"></div>
-              </div>
-            ))}
-          </div>
-        </main>
-      </div>
-
-      {showSongDetails && currentSong && (
-        <div className="song-details-overlay">
-          <button onClick={toggleSongDetails} className="close-button">
+    <>
+      {showSongDetails && (
+        <div className="song-details-modal">
+          <button className="close-modal-btn" onClick={toggleSongDetails}>
             ✕
           </button>
-          <div className="song-artwork">
-            <img
-              src={currentSong.artwork}
-              alt={`${currentSong.title} artwork`}
-            />
+          <div className="modal-artwork">
+            <img src={song.artwork} alt="Song artwork" />
           </div>
-          <div className="song-info">
-            <h2 className="song-title">{currentSong.title}</h2>
-            <p className="song-artist">{currentSong.artist}</p>
+          <div className="modal-info">
+            <h2>{song.title}</h2>
+            <p>{song.artist}</p>
           </div>
-          <div className="song-controls">
-            <div className="control-buttons">
-              <button
-                onClick={toggleShuffle}
-                className={`shuffle-button ${shuffle ? "active" : ""}`}
-              >
-                🔀
-              </button>
-              <button className="prev-button">⏮</button>
-              <button onClick={togglePlay} className="play-button">
-                {isPlaying ? "⏸" : "▶"}
-              </button>
-              <button className="next-button">⏭</button>
-              <button
-                onClick={toggleRepeat}
-                className={`repeat-button ${repeat ? "active" : ""}`}
-              >
-                🔁
-              </button>
+          <div className="modal-controls">
+            <button
+              className={`shuffle-btn ${shuffle ? "active" : ""}`}
+              onClick={toggleShuffle}
+            >
+              🔀
+            </button>
+            <button className="prev-btn">⏮</button>
+            <button className="play-btn" onClick={togglePlay}>
+              {isPlaying ? "⏸" : "▶"}
+            </button>
+            <button className="next-btn">⏭</button>
+            <button
+              className={`repeat-btn ${repeat ? "active" : ""}`}
+              onClick={toggleRepeat}
+            >
+              🔁
+            </button>
+          </div>
+          <div className="modal-progress">
+            <span className="time-current">{currentTime}</span>
+            <div className="progress-bar" onClick={updateProgress}>
+              <div
+                className="progress-fill"
+                style={{ width: `${progress}%` }}
+              ></div>
             </div>
-            <div className="progress-container">
-              <span className="current-time">{currentTime}</span>
-              <div className="progress-bar" onClick={updateProgress}>
-                <div
-                  className="progress-fill"
-                  style={{ width: `${progress}%` }}
-                ></div>
-              </div>
-              <span className="duration">{currentSong.duration}</span>
-            </div>
+            <span className="time-total">{duration}</span>
           </div>
         </div>
       )}
 
-      {currentSong && (
-        <div className="player-bar">
-          <div className="now-playing">
-            <div className="now-playing-artwork">
-              <img
-                src={currentSong.artwork}
-                alt={`${currentSong.title} artwork`}
-              />
-            </div>
-            <div
-              className="now-playing-info"
-              onClick={() => {
-                if (window.innerWidth <= 640) {
-                  toggleSongDetails();
-                }
-              }}
-            >
-              <div className="now-playing-title">{currentSong.title}</div>
-              <div className="now-playing-artist">{currentSong.artist}</div>
-            </div>
-          </div>
+      <div className={`music-player ${isCollapsed ? "collapsed" : ""}`}>
+        {!isMobile && (
+          <button className="collapse-btn" onClick={toggleCollapse}>
+            <span className={`collapse-icon ${isCollapsed ? "rotated" : ""}`}>
+              ▼
+            </span>
+          </button>
+        )}
 
-          <div className="player-controls">
-            <div className="control-buttons desktop-only">
+        <div
+          className="player-song-info"
+          onClick={isMobile ? toggleSongDetails : null}
+        >
+          <div className="song-artwork">
+            <img src={song.artwork} alt="Now playing" />
+          </div>
+          <div className="song-details">
+            <div className="song-title">{song.title}</div>
+            <div className="song-artist">{song.artist}</div>
+          </div>
+        </div>
+
+        <div className="player-controls">
+          {!isMobile && (
+            <div className="control-buttons">
               <button
+                className={`shuffle-btn ${shuffle ? "active" : ""}`}
                 onClick={toggleShuffle}
-                className={`shuffle-button ${shuffle ? "active" : ""}`}
               >
                 🔀
               </button>
-              <button className="prev-button">⏮</button>
-              <button onClick={togglePlay} className="play-button">
+              <button className="prev-btn">⏮</button>
+              <button className="play-btn" onClick={togglePlay}>
                 {isPlaying ? "⏸" : "▶"}
               </button>
-              <button className="next-button">⏭</button>
+              <button className="next-btn">⏭</button>
               <button
+                className={`repeat-btn ${repeat ? "active" : ""}`}
                 onClick={toggleRepeat}
-                className={`repeat-button ${repeat ? "active" : ""}`}
               >
                 🔁
               </button>
             </div>
-            <div className="progress-container">
-              <span className="current-time desktop-only">{currentTime}</span>
-              <div className="progress-bar" onClick={updateProgress}>
-                <div
-                  className="progress-fill"
-                  style={{ width: `${progress}%` }}
-                ></div>
-              </div>
-              <span className="duration desktop-only">{duration}</span>
-            </div>
-          </div>
+          )}
 
-          <div className="volume-controls desktop-only">
-            <button className="volume-icon">🔊</button>
+          <div className="progress-container">
+            {!isMobile && <span className="time-current">{currentTime}</span>}
+            <div className="progress-bar" onClick={updateProgress}>
+              <div
+                className="progress-fill"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+            {!isMobile && <span className="time-total">{duration}</span>}
+          </div>
+        </div>
+
+        {!isMobile && (
+          <div className="volume-controls">
+            <button className="volume-btn">🔊</button>
             <input
               type="range"
               min="0"
@@ -230,15 +218,15 @@ const MusicPlayer = ({ playlist = [], username = "User" }) => {
               className="volume-slider"
             />
           </div>
+        )}
 
-          {window.innerWidth <= 640 && (
-            <button onClick={togglePlay} className="play-button mobile-only">
-              {isPlaying ? "⏸" : "▶"}
-            </button>
-          )}
-        </div>
-      )}
-    </div>
+        {isMobile && (
+          <button className="play-btn mobile-play-btn" onClick={togglePlay}>
+            {isPlaying ? "⏸" : "▶"}
+          </button>
+        )}
+      </div>
+    </>
   );
 };
 

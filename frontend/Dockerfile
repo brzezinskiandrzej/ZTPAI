@@ -26,7 +26,7 @@ RUN npm run build
 FROM nginx:stable-alpine
 
 # Usuwamy domyślną konfigurację hosta, jeśli potrzebujemy własnego configu:
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Kopiujemy skompilowane pliki z etapu "builder"
 COPY --from=builder /app/build /usr/share/nginx/html
