@@ -10,6 +10,7 @@ RUN npm ci
 COPY . .
 
 RUN npm run build
+CMD ["sh", "-c", "npm run migration:run && node dist/src/index.js"]
 
 FROM node:18-alpine
 

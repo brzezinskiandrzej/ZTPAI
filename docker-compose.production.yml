@@ -15,7 +15,7 @@ services:
       - "5000:5000"
     environment:
       # Podajemy zmienne środowiskowe do połączenia z DB
-      DATABASE_URL: "postgres://user:password@db:5432/mydatabase"
+      DATABASE_URL: "postgres://user:password@localhost:5432/mydatabase"
       # Inne potrzebne sekrety można wstrzyknąć z zewnątrz np. przez environment
       NODE_ENV: "production"
     depends_on:
@@ -53,8 +53,8 @@ services:
       - db-data:/var/lib/postgresql/data
     networks:
       - app-network
-    # w produkcji raczej NIE trzeba wystawiać portu na zewnątrz
-    # "5432:5432" => wystawianie DB publicznie to niezbyt dobry pomysł
+    ports:
+      - "5432:5432"  
 
 volumes:
   db-data:
