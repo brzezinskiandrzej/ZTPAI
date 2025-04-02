@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
+import { LikedSong } from "./LikedSong";
+import { Playlist } from "./Playlist";
 
 @Entity('users')
 export class User {
@@ -25,4 +27,10 @@ export class User {
   
     @UpdateDateColumn()
     updated_at!: Date;
+
+    @OneToMany(() => Playlist, playlist => playlist.owner)
+    playlists!: Playlist[];
+
+    @OneToMany(() => LikedSong, likedSong => likedSong.user)
+    likedSongs!: LikedSong[];
   }
