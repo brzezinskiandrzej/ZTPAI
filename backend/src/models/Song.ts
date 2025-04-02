@@ -20,4 +20,7 @@ export class Song {
 
     @CreateDateColumn({ type: "timestamp" })
     uploaded_at!: Date;
+    
+    @Column({ nullable: true })
+    audio_url?: string;
   }
