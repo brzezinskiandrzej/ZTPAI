@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column, ManyToOne } from "typeorm";
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from "typeorm";
 import { Playlist } from "./Playlist";
 import { Song } from "./Song";
 
@@ -14,8 +14,10 @@ export class PlaylistSong {
   order_index!: number;
 
   @ManyToOne(() => Playlist, playlist => playlist.playlistSongs, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "playlist_id" })
   playlist!: Playlist;
 
   @ManyToOne(() => Song, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "song_id" }) 
   song!: Song;
 }

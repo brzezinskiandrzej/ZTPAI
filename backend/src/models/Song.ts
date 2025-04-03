@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, JoinColumn} from "typeorm";
 import { User } from "./User";
+import { Artist } from "./Artist";
 
 @Entity('songs')
 export class Song {
@@ -17,6 +18,10 @@ export class Song {
   
     @Column({ nullable: true })
     artist_id?: number;
+
+    @ManyToOne(() => Artist, { nullable: true })
+    @JoinColumn({ name: "artist_id" })
+    artist?: Artist;
 
     @CreateDateColumn({ type: "timestamp" })
     uploaded_at!: Date;

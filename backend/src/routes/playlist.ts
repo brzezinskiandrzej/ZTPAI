@@ -1,6 +1,6 @@
 import express from "express";
 import { Request, Response } from "express";
-import { AppDataSource } from "../../../database/config/data-source";
+import { AppDataSource } from "../database/config/data-source";
 import { User } from "../models/User";
 import { Playlist } from "../models/Playlist";
 import { PlaylistSong } from "../models/PlaylistSong";
@@ -15,9 +15,10 @@ const router = express.Router();
 router.get("/playlist/:userId", async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-
+    console.log("Fetching playlist for user:", userId);
     const userRepo = AppDataSource.getRepository(User);
     const user = await userRepo.findOneBy({ user_id: +userId });
+    console.log("User fetched:", user);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -27,7 +28,7 @@ router.get("/playlist/:userId", async (req: Request, res: Response) => {
       where: { owner: { user_id: +userId } },
       relations: ["owner", "playlistSongs"],  
     });
-
+    console.log("Playlist fetched:", playlist);
     if (!playlist) {
       return res.status(404).json({ error: "Playlist not found for this user" });
     }
@@ -35,23 +36,24 @@ router.get("/playlist/:userId", async (req: Request, res: Response) => {
     const playlistSongRepo = AppDataSource.getRepository(PlaylistSong);
     const playlistSongs = await playlistSongRepo.find({
       where: { playlist_id: playlist.playlist_id },
-      relations: ["song"],
+      relations: ["song", "song.artist"],
       order: { order_index: "ASC" }
     });
-
+    console.log("Playlist songs fetched:", playlistSongs);
     const tracks = playlistSongs.map(ps => {
       const s = ps.song;
       return {
         id: s.song_id,
         title: s.title,
+        artist: s.artist?.name || "Unknown",
         artwork: s.artwork_url,
         playCount: s.play_count,
-        duration: "3:27", 
+        duration: "", 
         isFavorite: false, 
-        url: "https://www.mfiles.co.uk/mp3-downloads/..."  
+        url: s.audio_url, 
       };
     });
-
+    console.log("Tracks prepared:", tracks);
     const likedSongRepo = AppDataSource.getRepository(LikedSong);
     const likedEntries = await likedSongRepo.find({
       where: { user_id: +userId }

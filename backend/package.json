@@ -5,8 +5,8 @@
     "build": "tsc",
     "start": "node dist/main.js",
     "dev": "ts-node-dev --respawn --transpile-only src/main.ts",
-    "migration:generate": "typeorm-ts-node-commonjs migration:generate",
-    "migration:run":      "typeorm-ts-node-commonjs migration:run"
+    "migration:generate": "typeorm-ts-node-commonjs migration:generate -- -d src/database/config/data-source.ts",
+    "migration:run": "typeorm-ts-node-commonjs migration:run -- -d src/database/config/data-source.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",

@@ -14,7 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/input" element={<InputDesign />} />
-          <Route path="/playlists/:userId" element={<Playlist />} />
+          <Route path="/playlist/:userId" element={<Playlist />} />
 
           <Route
             path="/saved"

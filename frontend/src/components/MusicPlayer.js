@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef} from "react";
 import "./MusicPlayer.css";
 
 const MusicPlayer = ({ song }) => {
@@ -11,85 +11,116 @@ const MusicPlayer = ({ song }) => {
   const [showSongDetails, setShowSongDetails] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const audioRef = useRef(null);
 
   useEffect(() => {
-    if (song) {
+    if (song && audioRef.current) {
+      console.log("Setting audio source:", song.audio_url);
+      if (!song.audio_url || !song.audio_url.startsWith("http")) {
+        console.error("Invalid audio URL:", song.audio_url);
+      }
+      audioRef.current.src = song.audio_url || "";
+      audioRef.current.currentTime = 0;
       setIsPlaying(true);
       setProgress(0);
       setCurrentTime("00:00");
-      setDuration(song.duration);
+      setDuration(song.duration || "00:00");
     }
   }, [song]);
 
   
   useEffect(() => {
-    let interval;
+    if (!audioRef.current) return;
+    audioRef.current.volume = volume / 100;
+  }, [volume]);
+
+  useEffect(() => {
+    if (!audioRef.current) return;
     if (isPlaying) {
-      interval = setInterval(() => {
-        setProgress((prev) => {
-          if (prev >= 100) {
-            setIsPlaying(false);
-            clearInterval(interval);
-            return 100;
-          }
-          return prev + 0.5;
-        });
-
-        const durationSecs = convertTimeToSeconds(duration);
-        const currentSecs = Math.floor((durationSecs * progress) / 100);
-        setCurrentTime(formatTime(currentSecs));
-      }, 1000);
+      audioRef.current.play().catch((err) => console.error("Play error:", err));
+    } else {
+      audioRef.current.pause();
     }
+  }, [isPlaying]);
+  
 
-    return () => clearInterval(interval);
-  }, [isPlaying, duration]);
+  const handleTimeUpdate = () => {
+    if (!audioRef.current) return;
+    const cur = audioRef.current.currentTime;
+    const dur = audioRef.current.duration;
 
-  const togglePlay = () => {
-    setIsPlaying(!isPlaying);
+    if (!isNaN(dur) && dur > 0) {
+      setProgress((cur / dur) * 100);
+      setCurrentTime(formatTime(Math.floor(cur)));
+    }
   };
 
-  const toggleSongDetails = () => {
-    setShowSongDetails(!showSongDetails);
+  const handleLoadedMetadata = () => {
+    if (!audioRef.current) return;
+    const dur = audioRef.current.duration;
+    if (!isNaN(dur) && dur > 0) {
+      setDuration(formatTime(Math.floor(dur)));
+    }
   };
 
-  const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed);
+  const handleEnded = () => {
+    if (repeat && audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch((err) => console.error(err));
+    } else {
+      setIsPlaying(false);
+    }
+  };
+  const handleAudioError = () => {
+    if (!audioRef.current) return;
+    const error = audioRef.current.error;
+    console.error("Audio element error:", error);
+  };
+
+  const formatTime = (sec) => {
+    const minutes = Math.floor(sec / 60);
+    const seconds = sec % 60;
+    return `${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   const updateProgress = (e) => {
+    if (!audioRef.current) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const percentage = (x / rect.width) * 100;
-    setProgress(Math.min(Math.max(percentage, 0), 100));
+    const newProgress = Math.min(Math.max(percentage, 0), 100);
+    setProgress(newProgress);
 
-    const durationSecs = convertTimeToSeconds(duration);
-    const currentSecs = Math.floor((durationSecs * percentage) / 100);
-    setCurrentTime(formatTime(currentSecs));
+    const dur = audioRef.current.duration;
+    if (!isNaN(dur) && dur > 0) {
+      const newTime = (dur * newProgress) / 100;
+      audioRef.current.currentTime = newTime;
+      setCurrentTime(formatTime(Math.floor(newTime)));
+    }
   };
 
+  const togglePlay = () => {
+    setIsPlaying((prev) => !prev);
+  };
+  const toggleSongDetails = () => {
+    setShowSongDetails((prev) => !prev);
+  };
+  const toggleCollapse = () => {
+    setIsCollapsed((prev) => !prev);
+  };
   const toggleShuffle = () => {
-    setShuffle(!shuffle);
+    setShuffle((prev) => !prev);
   };
-
   const toggleRepeat = () => {
-    setRepeat(!repeat);
+    setRepeat((prev) => !prev);
   };
-
   const updateVolume = (value) => {
     setVolume(value);
   };
 
-  const convertTimeToSeconds = (timeString) => {
-    if (!timeString) return 0;
-    const [minutes, seconds] = timeString.split(":").map(Number);
-    return minutes * 60 + seconds;
-  };
-
-  const formatTime = (totalSeconds) => {
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-  };
+  
 
   if (!song) return null;
 
@@ -97,6 +128,13 @@ const MusicPlayer = ({ song }) => {
 
   return (
     <>
+      <audio
+        ref={audioRef}
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
+        onEnded={handleEnded}
+        onError={handleAudioError}
+      />
       {showSongDetails && (
         <div className="song-details-modal">
           <button className="close-modal-btn" onClick={toggleSongDetails}>

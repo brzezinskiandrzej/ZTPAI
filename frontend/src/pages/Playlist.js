@@ -34,7 +34,7 @@ function Playlist() {
   const handlePlayTrack = async (track) => {
     try {
       if (track.id) {
-        await updatePlayCount(track.id);
+        await updatePlayCount(track.id,userId);
       }
       setCurrentSong({
         id: track.id,
@@ -42,6 +42,7 @@ function Playlist() {
         artist: track.artist,
         artwork: track.artwork,
         duration: track.duration,
+        audio_url: track.url,
       });
     } catch (err) {
       console.error("Error playing track:", err);
@@ -50,7 +51,7 @@ function Playlist() {
 
   const handleToggleFavorite = async (trackId, isFavorite) => {
     try {
-      await toggleFavorite(trackId, !isFavorite);
+      await toggleFavorite(trackId, !isFavorite,userId);
 
       setPlaylist((prevPlaylist) => ({
         ...prevPlaylist,
