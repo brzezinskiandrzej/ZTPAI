@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Playlist from "./pages/Playlist";
 import LandingPage from "./components/LandingPage";
 import InputDesign from "./pages/InputDesign";
+import MyAccount from "./components/MyAccount";
+import LoginRegistration from "./pages/LoginRegistration";
 
 import { Navigate } from "react-router-dom";
 import "./App.css";
@@ -15,6 +17,8 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/input" element={<InputDesign />} />
           <Route path="/playlist/:userId" element={<Playlist />} />
+          <Route path="/account" element={<MyAccount />} />
+          <Route path="/login" element={<LoginRegistration />} />
 
           <Route
             path="/saved"

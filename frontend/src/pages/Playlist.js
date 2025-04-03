@@ -15,21 +15,26 @@ function Playlist() {
   const [currentSong, setCurrentSong] = useState(null);
   const { userId } = useParams();
 
-  useEffect(() => {
-    const loadPlaylist = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchUserPlaylist(userId);
-        setPlaylist(data);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
-    };
+  const loadPlaylist = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchUserPlaylist(userId);
+      setPlaylist(data);
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     loadPlaylist();
-  }, []);
+  }, [userId]);
+
+  const refreshPlaylist = async () => {
+    console.log("Refreshing playlist...");
+    await loadPlaylist();
+  };
 
   const handlePlayTrack = async (track) => {
     try {
@@ -78,7 +83,7 @@ function Playlist() {
         <div className="logo">Logo</div>
         <nav className="main-nav">
           <div className="nav-item">Playlists</div>
-          <div className="nav-item mood-check">Mood Check</div>
+          <div className="nav-item mood-check" onClick={refreshPlaylist}>Mood Check</div>
           <div className="nav-item">Saved</div>
         </nav>
         <div className="user-avatar"></div>
