@@ -251,6 +251,17 @@
   align-items: center;
   gap: 8px;
 }
+.shuffle-btn i,
+.repeat-btn i {
+  color: #999;       
+  font-size: 12px;   
+  transition: color 0.3s;
+}
+
+.shuffle-btn.active i,
+.repeat-btn.active i {
+  color: #0084ff;     
+}
 
 /* Mobile Styles */
 @media (max-width: 991px) {

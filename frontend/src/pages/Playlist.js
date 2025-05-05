@@ -77,6 +77,11 @@ function Playlist() {
     return <div className="playlist-error">{error}</div>;
   }
 
+  const currentIndex =
+    currentSong && playlist
+      ? playlist.tracks.findIndex((t) => t.id === currentSong.id)
+      : -1;
+
   return (
     <div className="playlist-container">
       <header className="main-header">
@@ -126,7 +131,12 @@ function Playlist() {
         </div>
       </div>
 
-      {currentSong && <MusicPlayer song={currentSong} />}
+      {currentSong && <MusicPlayer song={currentSong}
+      playlist={playlist.tracks}
+      currentIndex={currentIndex}
+      onChangeSong={(newSong, newIndex) =>
+        setCurrentSong({ ...newSong, currentIndex: newIndex })
+      } />}
     </div>
   );
 }
