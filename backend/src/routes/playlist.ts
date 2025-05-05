@@ -7,6 +7,7 @@ import { PlaylistSong } from "../models/PlaylistSong";
 import { Song } from "../models/Song";
 import { LikedSong } from "../models/LikedSong";
 import { url } from "inspector";
+import { isNumeric } from "../utils/isNumeric";
 
 const router = express.Router();
 
@@ -15,6 +16,9 @@ const router = express.Router();
 router.get("/playlist/:userId", async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
+    if (!isNumeric(userId)) {
+      return res.status(400).json({ error: "userId must be numeric" });
+    }
     console.log("Fetching playlist for user:", userId);
     const userRepo = AppDataSource.getRepository(User);
     const user = await userRepo.findOneBy({ user_id: +userId });
@@ -80,7 +84,9 @@ router.get("/playlist/:userId", async (req: Request, res: Response) => {
 router.post("/tracks/:trackId/play", async (req: Request, res: Response) => {
   try {
     const { trackId } = req.params;
-
+    if (!isNumeric(trackId)) {
+      return res.status(400).json({ error: "trackId must be numeric" });
+    }
     const songRepo = AppDataSource.getRepository(Song);
     const song = await songRepo.findOneBy({ song_id: +trackId });
     if (!song) {
@@ -107,7 +113,15 @@ router.post("/tracks/:trackId/favorite", async (req: Request, res: Response) => 
     const { trackId } = req.params;
     const { isFavorite } = req.body;
     const userId = +(req.query.userId || 1);
-
+    if (!isNumeric(trackId)) {
+      return res.status(400).json({ error: "trackId must be numeric" });
+    }
+    if (typeof isFavorite !== "boolean") {
+      // 422 – niepoprawna wartość pola
+      return res
+        .status(422)
+        .json({ error: "`isFavorite` must be boolean true/false" });
+    }
     const songRepo = AppDataSource.getRepository(Song);
     const song = await songRepo.findOneBy({ song_id: +trackId });
     if (!song) {
@@ -124,16 +138,10 @@ router.post("/tracks/:trackId/favorite", async (req: Request, res: Response) => 
         });
         await likedSongRepo.save(newLike);
       }
-      return res.json({
-        success: true,
-        message: `Track ${trackId} added to favorites`
-      });
+      return res.status(201).json({ success: true });
     } else {
       await likedSongRepo.delete({ user_id: userId, song_id: +trackId });
-      return res.json({
-        success: true,
-        message: `Track ${trackId} removed from favorites`
-      });
+      return res.status(200).json({ success: true });
     }
   } catch (err) {
     console.error(err);
