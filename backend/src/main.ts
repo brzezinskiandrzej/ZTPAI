@@ -1,6 +1,6 @@
 import express from "express";
 import path from "path";
-import playlistRoutes from "./routes/playlist";
+import playlistRoutes from "./routes/playlist.controller";
 import { AppDataSource } from "./database/config/data-source";
 
 const app = express();

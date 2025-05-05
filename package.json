@@ -11,6 +11,11 @@
   "description": "",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.7.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.21"
+  },
+  "devDependencies": {
+    "@types/swagger-jsdoc": "^6.0.4"
   }
 }

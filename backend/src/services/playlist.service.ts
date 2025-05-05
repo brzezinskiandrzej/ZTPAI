@@ -1,0 +1,70 @@
+// src/services/playlist.service.ts
+import { AppDataSource } from "../database/config/data-source";
+import { User } from "../models/User";
+import { Playlist } from "../models/Playlist";
+import { PlaylistSong } from "../models/PlaylistSong";
+import AppError from "../middlewares/AppError";
+import { Song } from "../models/Song";
+import { LikedSong } from "../models/LikedSong";
+
+export async function getUserPlaylist(userId: number) {
+  const userRepo = AppDataSource.getRepository(User);
+  const user = await userRepo.findOneBy({ user_id: userId });
+  if (!user) throw new AppError(404, "User not found");
+
+  const playlistRepo = AppDataSource.getRepository(Playlist);
+  const playlist = await playlistRepo.findOne({
+    where: { owner: { user_id: userId } },
+    relations: ["playlistSongs", "playlistSongs.song", "playlistSongs.song.artist"],
+  });
+  if (!playlist) throw new AppError(404, "Playlist not found for this user");
+
+  const tracks = playlist.playlistSongs
+    .sort((a, b) => a.order_index - b.order_index)
+    .map((ps) => ({
+      id: ps.song.song_id,
+      title: ps.song.title,
+      artist: ps.song.artist?.name ?? "Unknown",
+      artwork: ps.song.artwork_url,
+      playCount: ps.song.play_count,
+      duration: "",
+      isFavorite: false,
+      url: ps.song.audio_url,
+    }));
+
+  return { username: user.username, playlistName: playlist.name, tracks };
+}
+
+export async function incrementPlay(trackId: number) {
+    const songRepo = AppDataSource.getRepository(Song);
+    const song = await songRepo.findOneBy({ song_id: trackId });
+    if (!song) throw new AppError(404, "Track not found");
+  
+    song.play_count += 1;
+    await songRepo.save(song);
+  
+    return { playCount: song.play_count };   //  ← to właśnie test sprawdza
+  }
+  export async function toggleFavorite(
+    userId: number,
+    trackId: number,
+    isFavorite: boolean
+  ) {
+    const songRepo  = AppDataSource.getRepository(Song);
+    const likeRepo  = AppDataSource.getRepository(LikedSong);
+  
+    const song = await songRepo.findOneBy({ song_id: trackId });
+    if (!song) throw new AppError(404, "Track not found");
+  
+    if (isFavorite) {
+      const exists = await likeRepo.findOneBy({ user_id: userId, song_id: trackId });
+      if (!exists) {
+        await likeRepo.save(likeRepo.create({ user_id: userId, song_id: trackId }));
+      }
+      /** ⬇⬇⬇ MUSI coś zwrócić */
+      return { isFavorite: true };
+    }
+  
+    await likeRepo.delete({ user_id: userId, song_id: trackId });
+    return { isFavorite: false };
+  }
