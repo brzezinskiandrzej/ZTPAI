@@ -1,8 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "./LoginRegistration.css";
 
 function LoginRegistration() {
   const [isLogin, setIsLogin] = useState(true);
+  const { signin, signup } = useAuth();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -30,11 +34,27 @@ function LoginRegistration() {
     return true;
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     if (validateForm()) {
       // Handle form submission
       console.log("Form submitted:", formData);
+    }
+    if (!validateForm()) return;
+    try {
+      if (isLogin) {
+        await signin(formData.email, formData.password);
+      } else {
+        await signup({
+          username: formData.username,
+          email   : formData.email,
+          password: formData.password,
+        });
+        await signin(formData.email, formData.password);  // auto‑login
+      }
+      navigate(`/playlist/1`);           // lub „/dashboard”
+    } catch (err) {
+      alert(err.message ?? "Auth error");
     }
   }
 

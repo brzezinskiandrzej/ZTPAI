@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef} from "react";
-import "./MusicPlayer.css";
+import styles from "./MusicPlayer.module.css";
 
 const MusicPlayer = ({ song, playlist, currentIndex, onChangeSong }) => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -188,87 +188,87 @@ const MusicPlayer = ({ song, playlist, currentIndex, onChangeSong }) => {
         onError={handleAudioError}
       />
       {showSongDetails && (
-        <div className="song-details-modal">
-          <button className="close-modal-btn" onClick={toggleSongDetails}>
+        <div className={styles.songDetailsModal}>
+          <button className={styles.closeModalBtn} onClick={toggleSongDetails}>
             ✕
           </button>
-          <div className="modal-artwork">
+          <div className={styles.modalArtwork}>
             <img src={song.artwork} alt="Song artwork" />
           </div>
-          <div className="modal-info">
+          <div className={styles.modalInfo}>
             <h2>{song.title}</h2>
             <p>{song.artist}</p>
           </div>
-          <div className="modal-controls">
+          <div className={styles.modalControls}>
             <button
-              className={`shuffle-btn ${shuffle ? "active" : ""}`}
+              className={`${styles.shuffleBtn} ${shuffle ? styles.active : ""}`}
               onClick={toggleShuffle}
             >
               <i className="fa-solid fa-random"></i>
             </button>
-            <button className="prev-btn" onClick={handlePrevious}>⏮</button>
-            <button className="play-btn" onClick={togglePlay}>
+            <button className={styles.prevBtn} onClick={handlePrevious}>⏮</button>
+            <button className={styles.playBtn} onClick={togglePlay}>
               {isPlaying ? "⏸" : "▶"}
             </button>
-            <button className="next-btn" onClick={handleNext}>⏭</button>
+            <button className={styles.nextBtn} onClick={handleNext}>⏭</button>
             <button
-              className={`repeat-btn ${repeat ? "active" : ""}`}
+              className={`${styles.repeatBtn} ${repeat ? styles.active : ""}`}
               onClick={toggleRepeat}
             >
               <i className="fa-solid fa-repeat"></i>
             </button>
           </div>
-          <div className="modal-progress">
-            <span className="time-current">{currentTime}</span>
-            <div className="progress-bar" onClick={updateProgress}>
+          <div className={styles.modalProgress}>
+            <span className={styles.timeCurrent}>{currentTime}</span>
+            <div className={styles.progressBar} onClick={updateProgress}>
               <div
-                className="progress-fill"
+                className={styles.progressFill}
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
-            <span className="time-total">{duration}</span>
+            <span className={styles.timeTotal}>{duration}</span>
           </div>
         </div>
       )}
 
-      <div className={`music-player ${isCollapsed ? "collapsed" : ""}`}>
+      <div className={`${styles.musicPlayer} ${isCollapsed ? styles.collapsed : ""}`}>
         {!isMobile && (
-          <button className="collapse-btn" onClick={toggleCollapse}>
-            <span className={`collapse-icon ${isCollapsed ? "rotated" : ""}`}>
+          <button className={styles.collapseBtn} onClick={toggleCollapse}>
+            <span className={`${styles.collapseIcon} ${isCollapsed ? styles.rotated : ""}`}>
               ▼
             </span>
           </button>
         )}
 
         <div
-          className="player-song-info"
+          className={styles.playerSongInfo}
           onClick={isMobile ? toggleSongDetails : null}
         >
-          <div className="song-artwork">
+          <div className={styles.songArtwork}>
             <img src={song.artwork} alt="Now playing" />
           </div>
-          <div className="song-details">
-            <div className="song-title">{song.title}</div>
-            <div className="song-artist">{song.artist}</div>
+          <div className={styles.songDetails}>
+            <div className={styles.songTitle}>{song.title}</div>
+            <div className={styles.songArtist}>{song.artist}</div>
           </div>
         </div>
 
-        <div className="player-controls">
+        <div className={styles.playerControls}>
           {!isMobile && (
-            <div className="control-buttons">
+            <div className={styles.controlButtons}>
               <button
-                className={`shuffle-btn ${shuffle ? "active" : ""}`}
+                className={`${styles.shuffleBtn} ${shuffle ? styles.active : ""}`}
                 onClick={toggleShuffle}
               >
                 <i className="fa-solid fa-random"></i>
               </button>
-              <button className="prev-btn" onClick={handlePrevious}>⏮</button>
-              <button className="play-btn" onClick={togglePlay}>
+              <button className={styles.prevBtn} onClick={handlePrevious}>⏮</button>
+              <button className={styles.playBtn} onClick={togglePlay}>
                 {isPlaying ? "⏸" : "▶"}
               </button>
-              <button className="next-btn" onClick={handleNext}>⏭</button>
+              <button className={styles.nextBtn} onClick={handleNext}>⏭</button>
               <button
-                className={`repeat-btn ${repeat ? "active" : ""}`}
+                className={`${styles.repeatBtn} ${repeat ? styles.active : ""}`}
                 onClick={toggleRepeat}
               >
                 <i className="fa-solid fa-repeat"></i>
@@ -276,34 +276,34 @@ const MusicPlayer = ({ song, playlist, currentIndex, onChangeSong }) => {
             </div>
           )}
 
-          <div className="progress-container">
-            {!isMobile && <span className="time-current">{currentTime}</span>}
-            <div className="progress-bar" onClick={updateProgress}>
+          <div className={styles.progressContainer}>
+            {!isMobile && <span className={styles.timeCurrent}>{currentTime}</span>}
+            <div className={styles.progressBar} onClick={updateProgress}>
               <div
-                className="progress-fill"
+                className={styles.progressFill}
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
-            {!isMobile && <span className="time-total">{duration}</span>}
+            {!isMobile && <span className={styles.timeTotal}>{duration}</span>}
           </div>
         </div>
 
         {!isMobile && (
-          <div className="volume-controls">
-            <button className="volume-btn">🔊</button>
+          <div className={styles.volumeControls}>
+            <button className={styles.volumeBtn}>🔊</button>
             <input
               type="range"
               min="0"
               max="100"
               value={volume}
               onChange={(e) => updateVolume(e.target.value)}
-              className="volume-slider"
+              className={styles.volumeSlider}
             />
           </div>
         )}
 
         {isMobile && (
-          <button className="play-btn mobile-play-btn" onClick={togglePlay}>
+          <button className={ `${styles.playBtn} ${styles.mobilePlayBtn}`} onClick={togglePlay}>
             {isPlaying ? "⏸" : "▶"}
           </button>
         )}

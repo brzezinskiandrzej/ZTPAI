@@ -4,6 +4,9 @@ import { Artist } from "./Artist";
 
 @Entity('songs')
 export class Song {
+    reload() {
+        throw new Error('Method not implemented.');
+    }
     @PrimaryGeneratedColumn()
     song_id!: number;
   

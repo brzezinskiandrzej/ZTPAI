@@ -26,4 +26,4 @@ RUN npm prune --production
 
 
 
-CMD ["node", "dist/main.js"] 
+CMD ["node", "dist/src/server.js"] 

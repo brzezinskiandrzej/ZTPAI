@@ -13,6 +13,9 @@ exports.Song = void 0;
 const typeorm_1 = require("typeorm");
 const Artist_1 = require("./Artist");
 let Song = class Song {
+    reload() {
+        throw new Error('Method not implemented.');
+    }
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),

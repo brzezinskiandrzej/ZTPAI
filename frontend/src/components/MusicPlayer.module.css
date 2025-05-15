@@ -1,0 +1,315 @@
+/* Music Player Styles */
+.musicPlayer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(24, 24, 24, 0.98);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease-in-out;
+  z-index: 100;
+  color: white;
+}
+
+.musicPlayer.collapsed {
+  transform: translateY(100%);
+}
+
+.collapseBtn {
+  position: absolute;
+  top: -28px;
+  right: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px 6px 0 0;
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: all 0.3s ease;
+  background-color: rgba(24, 24, 24, 0.98);
+}
+
+.collapseIcon {
+  transition: transform 0.3s ease;
+  font-size: 14px;
+}
+
+.collapseIcon.rotated {
+  transform: rotate(180deg);
+}
+
+/* Song Info Section */
+.playerSongInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 180px;
+}
+
+.songArtwork {
+  width: 56px;
+  height: 56px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.songArtwork img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.songDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.songTitle {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.songArtist {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Player Controls */
+.playerControls {
+  flex: 1;
+  max-width: 722px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.controlButtons {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.controlButtons button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.playBtn {
+  background: white !important;
+  border: none;
+  color: black !important;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shuffleBtn.active,
+.repeatBtn.active {
+  color: #1db954;
+}
+
+/* Progress Bar */
+.progressContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progressBar {
+  flex: 1;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+}
+
+.progressFill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background-color: white;
+  border-radius: inherit;
+}
+
+.timeCurrent,
+.timeTotal {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Volume Controls */
+.volumeControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+}
+
+.volumeBtn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.volumeSlider {
+  width: 100px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+/* Song Details Modal */
+.songDetailsModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.95);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  color: white;
+}
+
+.closeModalBtn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modalArtwork {
+  width: 200px;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.modalArtwork img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modalInfo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.modalInfo h2 {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.modalInfo p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.modalControls {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.modalControls .playBtn {
+  width: 56px;
+  height: 56px;
+}
+
+.modalProgress {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.shuffleBtn i,
+.repeatBtn i {
+  color: #999;       
+  font-size: 12px;   
+  transition: color 0.3s;
+}
+
+.shuffleBtn.active i,
+.repeatBtn.active i {
+  color: #0084ff;     
+}
+
+/* Mobile Styles */
+@media (max-width: 991px) {
+  .playerControls {
+    text-align: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .musicPlayer {
+    padding: 12px 16px;
+    gap: 12px;
+    flex-wrap: nowrap;
+  }
+
+  .playerSongInfo {
+    min-width: 120px;
+    flex: 1;
+  }
+
+  .songArtwork {
+    width: 40px;
+    height: 40px;
+  }
+
+  .controlButtons {
+    display: none;
+  }
+
+  .timeCurrent,
+  .timeTotal {
+    display: none;
+  }
+
+  .volumeControls {
+    display: none;
+  }
+
+  .mobilePlayBtn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .playerControls {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-right: 12px;
+  }
+}

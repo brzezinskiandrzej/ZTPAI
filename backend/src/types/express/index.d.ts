@@ -1,0 +1,11 @@
+// backend/src/types/express/index.d.ts
+import { User } from "../../models/User";
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: { userId: number; role: string };
+    }
+  }
+}
+export {};

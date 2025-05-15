@@ -9,15 +9,42 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fixtures = exports.app = void 0;
-const app_1 = require("../src/app");
+exports.fixtures = void 0;
+// tests/setup.ts
 const data_source_1 = require("../src/database/config/data-source");
-const seedTestData_1 = require("./seedTestData");
-exports.app = (0, app_1.createApp)();
+const User_1 = require("../src/models/User");
+const Playlist_1 = require("../src/models/Playlist");
+const Song_1 = require("../src/models/Song");
+const PlaylistSong_1 = require("../src/models/PlaylistSong");
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
-    yield data_source_1.AppDataSource.initialize(); // 1 raz – bez listen()
-    exports.fixtures = yield (0, seedTestData_1.seedTestData)(); // dowolne dane startowe
+    // 1. inicjalizacja
+    yield data_source_1.AppDataSource.initialize();
+    yield data_source_1.AppDataSource.synchronize(true); // czyści schemat testowy
+    // 2. seed
+    const userRepo = data_source_1.AppDataSource.getRepository(User_1.User);
+    const songRepo = data_source_1.AppDataSource.getRepository(Song_1.Song);
+    const plRepo = data_source_1.AppDataSource.getRepository(Playlist_1.Playlist);
+    const psRepo = data_source_1.AppDataSource.getRepository(PlaylistSong_1.PlaylistSong);
+    const user = yield userRepo.save(userRepo.create({
+        username: "TestUser",
+        email: "test@example.com",
+        password_hash: "hash"
+    }));
+    const song = yield songRepo.save(songRepo.create({
+        title: "Test song",
+        audio_url: "https://www.mfiles.co.uk/mp3-downloads/gs-cd-track2.mp3"
+    }));
+    const playlist = yield plRepo.save(plRepo.create({
+        name: "Test playlist",
+        owner: user
+    }));
+    yield psRepo.save(psRepo.create({
+        playlist,
+        song,
+        order_index: 1
+    }));
+    exports.fixtures = { user, song }; // ← udostępniamy testom
 }));
 afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
-    yield data_source_1.AppDataSource.destroy(); // zamyka i DROP SCHEMA gdy NODE_ENV=test
+    yield data_source_1.AppDataSource.destroy();
 }));
