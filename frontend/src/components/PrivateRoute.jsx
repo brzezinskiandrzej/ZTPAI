@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 /**
@@ -8,6 +8,13 @@ import { useAuth } from "../context/AuthContext";
  *  W przeciwnym razie ➜ redirect na /login.
  */
 export default function PrivateRoute() {
-  const { user } = useAuth();
-  return user ? <Outlet /> : <Navigate to="/login" replace />;
+  const { user,loading } = useAuth();
+  const loc = useLocation();
+  if (loading) return <p style={{textAlign:"center",marginTop:"2rem"}}>⌛ sprawdzam sesję…</p>;
+  if (!user) {
+    // zapamiętaj ścieżkę, żeby po logowaniu wrócić
+    sessionStorage.setItem("MM_BACK", loc.pathname);
+    return <Navigate to="/login" replace />;
+  }
+  return <Outlet />;
 }

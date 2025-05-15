@@ -6,13 +6,15 @@ import LandingPage from "./components/LandingPage";
 import InputDesign from "./pages/InputDesign";
 import MyAccount from "./components/MyAccount";
 import LoginRegistration from "./pages/LoginRegistration";
-import PrivateRoute      from "./components/PrivateRoute"; 
+import PrivateRoute      from "./components/PrivateRoute";
+import SessionIndicator from "./components/SessionIndicator"; 
 
 import { Navigate } from "react-router-dom";
 import "./App.css";
 
 function App() {
   return (
+    <>
     <Router>
       <div className="app">
         <Routes>
@@ -47,6 +49,8 @@ function App() {
         </Routes>
       </div>
     </Router>
+    <SessionIndicator/>
+    </>
   );
 }
 

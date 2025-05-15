@@ -147,6 +147,9 @@
 .submit-btn:hover {
   background-color: #d99b45;
 }
+.error-msg{color:#ff5c5c;margin:8px 0;font-size:14px}
+
+
 
 /* Footer */
 .auth-footer {

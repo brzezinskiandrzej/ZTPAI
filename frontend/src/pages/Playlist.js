@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-  fetchUserPlaylist,
-  updatePlayCount,
-  toggleFavorite,
+  usePlaylistApi
 } from "../services/playlistService";
 import MusicPlayer from "../components/MusicPlayer";
 import "./Playlist.css";
@@ -14,7 +12,7 @@ function Playlist() {
   const [error, setError] = useState(null);
   const [currentSong, setCurrentSong] = useState(null);
   const { userId } = useParams();
-
+  const { fetchUserPlaylist, updatePlayCount, toggleFavorite } = usePlaylistApi();
   const loadPlaylist = async () => {
     try {
       setLoading(true);

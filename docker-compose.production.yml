@@ -18,6 +18,8 @@ services:
       DATABASE_URL: "postgres://user:password@db:5432/mydatabase"
       # Inne potrzebne sekrety można wstrzyknąć z zewnątrz np. przez environment
       NODE_ENV: "production"
+      ACCESS_TOKEN_SECRET:  "leTK82maWBeXH7hO6lw"
+      REFRESH_TOKEN_SECRET: "iEDAw1YbJroBaBt8D9R"
     depends_on:
       - db
     networks:
@@ -55,7 +57,10 @@ services:
       - app-network
     ports:
       - "5432:5432"  
-
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "user", "-d", "mydatabase" ]
+      interval: 3s
+      retries: 10
 volumes:
   db-data:
 

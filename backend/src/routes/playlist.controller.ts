@@ -9,6 +9,7 @@ import { LikedSong } from "../models/LikedSong";
 import { url } from "inspector";
 import { isNumeric } from "../utils/isNumeric";
 import { isBoolean } from "../utils/isBoolean";
+import { requireAuth, AuthReq } from "../middlewares/auth.middleware";
 
 const router = express.Router();
 
@@ -39,11 +40,15 @@ export const playlistRouter = Router();
  */
 playlistRouter.get(
   "/playlist/:userId",
+  requireAuth,
   validateNumericId("userId"),
-  async (req, res, next) => {
+  async (req: AuthReq, res, next) => {
     try {
-      const data = await srv.getUserPlaylist(+req.params.userId);
-      res.status(200).json(data);
+      const requested = +req.params.userId;
+      if (req.user!.userId !== requested && req.user!.role !== "admin")
+        return res.status(403).json({ error: "Forbidden" });
+
+      const data = await srv.getUserPlaylist(requested)
     } catch (e) {
       next(e);
     }
@@ -53,6 +58,7 @@ playlistRouter.get(
 // analogicznie POST /tracks/:id/play  & /tracks/:id/favorite
 playlistRouter.post(
   "/tracks/:trackId/play",
+  requireAuth,
   validateNumericId("trackId"),
   async (req, res, next) => {
     try {
@@ -65,6 +71,7 @@ playlistRouter.post(
 );
 playlistRouter.post(
   "/tracks/:trackId/favorite",
+  requireAuth,
   validateNumericId("trackId"),
   async (req, res, next) => {
     try {

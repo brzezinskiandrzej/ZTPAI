@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation  } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "./LoginRegistration.css";
 
 function LoginRegistration() {
   const [isLogin, setIsLogin] = useState(true);
+  const [errors,  setErrors]  = useState("");
   const { signin, signup } = useAuth();
   const navigate = useNavigate();
+  const loc  = useLocation();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -30,31 +32,37 @@ function LoginRegistration() {
   }
 
   function validateForm() {
-    // Basic validation logic here
-    return true;
+    const { email, password, confirmPassword, username } = formData;
+    if (!email || !password) return "Wymagane email i hasło";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Nieprawidłowy e-mail";
+    if (!isLogin) {
+      if (!username) return "Wymagany username";
+      if (password !== confirmPassword) return "Hasła nie są identyczne";
+      if (password.length < 8 ||
+          !/[A-Z]/.test(password) ||
+          !/[a-z]/.test(password) ||
+          !/[0-9]/.test(password))
+        return "Hasło ≥ 8 znaków, min 1×Aa 1×0-9";
+    }
+    return "";
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
-    if (validateForm()) {
-      // Handle form submission
-      console.log("Form submitted:", formData);
-    }
-    if (!validateForm()) return;
+    const err = validateForm();
+    if (err) { setErrors(err); return; }
+
     try {
-      if (isLogin) {
-        await signin(formData.email, formData.password);
-      } else {
-        await signup({
-          username: formData.username,
-          email   : formData.email,
-          password: formData.password,
-        });
-        await signin(formData.email, formData.password);  // auto‑login
-      }
-      navigate(`/playlist/1`);           // lub „/dashboard”
-    } catch (err) {
-      alert(err.message ?? "Auth error");
+      if (isLogin) await signin(formData.email, formData.password);
+      else         await signup(formData);
+      // przekierowanie – na zapamiętaną trasę lub /
+      const back = sessionStorage.getItem("MM_BACK") || "/";
+      sessionStorage.removeItem("MM_BACK");
+      navigate(back, { replace:true });
+    } catch (e) {
+     // backend zawsze zwraca { error: "..."}  – pobierz:
+      const msg = e?.message || "Coś poszło nie tak";
+      setErrors(msg);
     }
   }
 
@@ -129,6 +137,7 @@ function LoginRegistration() {
                     />
                   </div>
                 )}
+                {errors && <p className="error-msg">{errors}</p>}
                 <button type="submit" className="submit-btn">
                   {isLogin ? "Log In" : "Create Account"}
                 </button>

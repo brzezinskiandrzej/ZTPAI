@@ -1,4 +1,4 @@
-const API_BASE_URL = "/api";
+const API_BASE_URL = "/api/auth";
 
 export async function register(data) {
   const res = await fetch(`${API_BASE_URL}/register`, {
