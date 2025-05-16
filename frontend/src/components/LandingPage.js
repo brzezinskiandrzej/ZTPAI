@@ -1,10 +1,15 @@
+// src/components/LandingPage.jsx
 import React, { useState } from "react";
-import "./LandingPage.css";
+import { Link } from "react-router-dom";
+import styles from "./LandingPage.module.css";
+import { useNavigate } from "react-router-dom";
 
 function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeAccordion, setActiveAccordion] = useState(-1);
-  const [accordionItems] = useState([
+  const navigate = useNavigate();
+
+  const accordionItems = [
     {
       title: "AI",
       content:
@@ -30,18 +35,16 @@ function LandingPage() {
       content:
         "Manage your mood-based recommendations with ease. Our dashboard is your personal control center for all things musical, ensuring you never miss a beat.",
     },
-  ]);
+  ];
 
-  function toggleMenu() {
-    setIsMenuOpen(!isMenuOpen);
-  }
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  function toggleAccordion(index) {
-    setActiveAccordion(activeAccordion === index ? -1 : index);
-  }
+  const toggleAccordion = (idx) =>
+    setActiveAccordion(activeAccordion === idx ? -1 : idx);
 
   return (
-    <div className="landing-page">
+    <div className={styles.landingPage}>
+      {/*  fonty + ikony  */}
       <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap"
         rel="stylesheet"
@@ -50,143 +53,181 @@ function LandingPage() {
         href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.30.0/tabler-icons.min.css"
         rel="stylesheet"
       />
-      <div className="app-container">
-        <header className="main-header">
-          <div className="logo">Logo</div>
-          <nav className={`nav-menu ${isMenuOpen ? "menu-open" : ""}`}>
-            <div className="nav-item">Home</div>
-            <div className="nav-item">Features</div>
-            <div className="nav-item">How It Works</div>
-            <div className="nav-item">Contact</div>
+
+      <div className={styles.appContainer}>
+        {/* ---------------- HEADER ---------------- */}
+        <header className={styles.mainHeader}>
+          <div
+            className="logo"
+            onClick={() => navigate("/")}
+            style={{ cursor: "pointer" }}
+          >
+            <img
+              src="/logo_mood_music.png"
+              alt="Mood Music Logo"
+              style={{ height: "40px", objectFit: "contain" }}
+            />
+          </div>
+
+          <nav
+            className={`${styles.navMenu} ${
+              isMenuOpen ? styles.menuOpen : ""
+            }`}
+          >
+            <div className={styles.navItem}>Home</div>
+            <div className={styles.navItem}>Features</div>
+            <div className={styles.navItem}>How It Works</div>
+            <div className={styles.navItem}>Contact</div>
           </nav>
+
           <button
-            className="menu-toggle"
+            className={styles.menuToggle}
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             aria-expanded={isMenuOpen}
             onClick={toggleMenu}
           >
-            <div className="hamburger">
+            <div className={styles.hamburger}>
               <span
-                className={`hamburger-line ${isMenuOpen ? "rotate-down" : ""}`}
-              ></span>
+                className={`${styles.hamburgerLine} ${
+                  isMenuOpen ? styles.rotateDown : ""
+                }`}
+              />
               <span
-                className={`hamburger-line ${isMenuOpen ? "hidden" : ""}`}
-              ></span>
+                className={`${styles.hamburgerLine} ${
+                  isMenuOpen ? styles.hidden : ""
+                }`}
+              />
               <span
-                className={`hamburger-line ${isMenuOpen ? "rotate-up" : ""}`}
-              ></span>
+                className={`${styles.hamburgerLine} ${
+                  isMenuOpen ? styles.rotateUp : ""
+                }`}
+              />
             </div>
           </button>
-          <div className="cta-button">Get Started</div>
+
+          <div className={styles.ctaButton}>Get Started</div>
         </header>
 
-        <section className="hero-section">
-          <div className="hero-overlay"></div>
-          <div className="hero-content">
-            <div className="hero-tagline">Feel the Beat</div>
-            <h1 className="hero-title">Mood Music</h1>
-            <div className="hero-description">
+        {/* ---------------- HERO ---------------- */}
+        <section className={styles.heroSection}>
+          <div className={styles.heroOverlay} />
+          <div className={styles.heroContent}>
+            <div className={styles.heroTagline}>Feel the Beat</div>
+            <h1 className={styles.heroTitle}>Mood Music</h1>
+            <p className={styles.heroDescription}>
               Immerse yourself in a world of sound that resonates with your
               feelings. Ready to vibe?
-            </div>
-            <div className="hero-cta-container">
-              <div className="hero-cta-button">Find Music</div>
+            </p>
+            <div className={styles.heroCtaContainer}>
+              <Link to="/input" className={styles.heroCtaButton}>
+                Find Music
+              </Link>
             </div>
           </div>
         </section>
 
-        <section className="playlists-section">
-          <div className="playlists-container">
-            <div className="playlists-content">
-              <h2 className="playlists-title">
-                <p className="title-text">
-                  <span className="title-large">Personalized Playlists</span>
-                  <strong>
-                    <span className="cursor"></span>
-                  </strong>
-                </p>
+        {/* ---------------- PLAYLISTS ---------------- */}
+        <section className={styles.playlistsSection}>
+          <div className={styles.playlistsContainer}>
+            <div className={styles.playlistsContent}>
+              <h2 className={styles.playlistsTitle}>
+                <span className={styles.titleLarge}>Personalized Playlists</span>
+                <strong>
+                  <span className={styles.cursor} />
+                </strong>
               </h2>
-              <p className="playlists-description">
+
+              <p className={styles.playlistsDescription}>
                 Experience playlists crafted by AI that understands your mood.
                 Whether you're feeling ecstatic or melancholic, we've got the
                 tunes to match. Get ready to jam!
               </p>
-              <div className="explore-button">Explore Now</div>
+
+              <button className={styles.exploreButton}>Explore Now</button>
             </div>
-            <div className="playlists-image-container">
+
+            <div className={styles.playlistsImageContainer}>
               <img
-                alt="Collection of musical instruments"
                 src="https://cdn.builder.io/api/v1/image/assets%2Fbba7ad93b6cd465bbcc9098b789c5ec9%2F3737a7bdb7af4a8bb3d1c68157df39ba"
-                className="playlists-image"
+                alt="Collection of musical instruments"
+                className={styles.playlistsImage}
               />
             </div>
           </div>
         </section>
 
-        <section className="mood-section">
-          <div className="mood-title">Your Mood, Your Music</div>
+        {/* ---------------- MOOD BANNER ---------------- */}
+        <section className={styles.moodSection}>
+          <div className={styles.moodTitle}>Your Mood, Your Music</div>
         </section>
 
-        <section className="how-section">
-          <div className="how-background"></div>
-          <div className="how-container">
-            <div className="how-content">
-              <div className="how-card">
-                <div className="how-header">
-                  <i className="ti ti-settings"></i>
-                  <h3 className="how-title">How It Works</h3>
+        {/* ---------------- HOW IT WORKS ---------------- */}
+        <section className={styles.howSection}>
+          <div className={styles.howBackground} />
+          <div className={styles.howContainer}>
+            <div className={styles.howContent}>
+              <div className={styles.howCard}>
+                <div className={styles.howHeader}>
+                  <i className="ti ti-settings" />
+                  <h3 className={styles.howTitle}>How It Works</h3>
                 </div>
-                <p className="how-description">
+                <p className={styles.howDescription}>
                   AI magic for your musical experience.
                 </p>
-                <div className="accordion-container">
-                  {accordionItems.map((item, index) => (
-                    <div key={index} className="accordion-item">
+
+                {/*  ACCORDION  */}
+                <div className={styles.accordionContainer}>
+                  {accordionItems.map((item, idx) => (
+                    <div key={idx} className={styles.accordionItem}>
                       <button
-                        onClick={() => toggleAccordion(index)}
-                        className="accordion-button"
+                        onClick={() => toggleAccordion(idx)}
+                        className={styles.accordionButton}
                       >
                         <span>{item.title}</span>
                         <i
                           className={`ti ti-chevron-${
-                            activeAccordion === index ? "up" : "down"
+                            activeAccordion === idx ? "up" : "down"
                           }`}
-                        ></i>
+                        />
                       </button>
+
                       <div
-                        className={`accordion-content ${
-                          activeAccordion === index ? "active" : ""
+                        className={`${styles.accordionContent} ${
+                          activeAccordion === idx ? styles.active : ""
                         }`}
                       >
-                        <p className="accordion-text">{item.content}</p>
+                        <p className={styles.accordionText}>{item.content}</p>
                       </div>
                     </div>
                   ))}
                 </div>
+                {/* /accordion */}
               </div>
             </div>
-            <div className="how-image-container">
+
+            <div className={styles.howImageContainer}>
               <img
-                alt="Person enjoying music"
                 src="https://cdn.builder.io/api/v1/image/assets%2Fbba7ad93b6cd465bbcc9098b789c5ec9%2Fdb6ea667c7504a2b8b57268ff04927b8"
-                className="how-image"
+                alt="Person enjoying music"
+                className={styles.howImage}
               />
             </div>
           </div>
         </section>
 
-        <section className="testimonials-section">
-          <div className="testimonials-background"></div>
-          <div className="testimonials-container">
-            <div className="testimonials-content">
-              <div className="testimonials-list">
+        {/* ---------------- TESTIMONIALS ---------------- */}
+        <section className={styles.testimonialsSection}>
+          <div className={styles.testimonialsBackground} />
+          <div className={styles.testimonialsContainer}>
+            <div className={styles.testimonialsContent}>
+              <div className={styles.testimonialsList}>
                 {[
                   {
                     image:
                       "https://r.mobirisesite.com/1250704/assets/images/photo-1681075401974-907cc62a4373.jpeg",
                     name: "Emily Stone",
                     role: "Mollitia Accusamus",
-                    text: "This platform changed my life! I finally found the perfect playlist for my coffee-fueled existential crises.",
+                    text: "This platform changed my life! I finally found the perfect playlist for my coffee‑fueled existential crises.",
                   },
                   {
                     image:
@@ -198,28 +239,27 @@ function LandingPage() {
                   {
                     image:
                       "https://r.mobirisesite.com/1250704/assets/images/photo-1525614686090-7a3108e3758e.jpeg",
-                    name: "Jake Rivers",
+                    name: "Olivia Hart",
                     role: "Mollitia Accusamus",
                     text: "The AI recommendations are spot on! It's like my own personal DJ, but way cooler.",
                   },
-                ].map((testimonial, index) => (
-                  <div key={index} className="testimonial-card">
-                    <div className="testimonial-wrapper">
-                      <div className="testimonial-img">
-                        <div className="image-wrap">
+                ].map((t, i) => (
+                  <div key={i} className={styles.testimonialCard}>
+                    <div className={styles.testimonialWrapper}>
+                      <div className={styles.testimonialImg}>
+                        <div className={styles.imageWrap}>
                           <img
-                            src={testimonial.image}
-                            className="testimonial-avatar"
+                            src={t.image}
+                            alt={t.name}
+                            className={styles.testimonialAvatar}
                           />
                         </div>
-                        <div className="name-wrapper">
-                          <p className="testimonial-name">{testimonial.name}</p>
-                          <p className="testimonial-role">{testimonial.role}</p>
+                        <div className={styles.nameWrapper}>
+                          <p className={styles.testimonialName}>{t.name}</p>
+                          <p className={styles.testimonialRole}>{t.role}</p>
                         </div>
                       </div>
-                      <div className="testimonial-content">
-                        <p className="testimonial-text">{testimonial.text}</p>
-                      </div>
+                      <p className={styles.testimonialText}>{t.text}</p>
                     </div>
                   </div>
                 ))}
@@ -229,48 +269,59 @@ function LandingPage() {
         </section>
       </div>
 
-      <section className="contact-section">
-        <div className="contact-container">
-          <div className="contact-form-container">
-            <div className="contact-header">
-              <div className="contact-icon-circle">
-                <i className="ti ti-mail"></i>
+      {/* ---------------- CONTACT ---------------- */}
+      <section className={styles.contactSection}>
+        <div className={styles.contactContainer}>
+          {/* FORM */}
+          <div className={styles.contactFormContainer}>
+            <div className={styles.contactHeader}>
+              <div className={styles.contactIconCircle}>
+                <i className="ti ti-mail" />
               </div>
-              <h3 className="contact-title">Get In Touch</h3>
+              <h3 className={styles.contactTitle}>Get In Touch</h3>
             </div>
-            <form className="contact-form">
-              <input type="text" placeholder="Name" className="contact-input" />
+
+            <form className={styles.contactForm}>
+              <input
+                type="text"
+                placeholder="Name"
+                className={styles.contactInput}
+              />
               <input
                 type="email"
                 placeholder="Email"
-                className="contact-input"
+                className={styles.contactInput}
               />
               <textarea
                 placeholder="Message"
-                className="contact-textarea"
-              ></textarea>
-              <button className="contact-submit">Send Message</button>
+                className={styles.contactTextarea}
+              />
+              <button type="submit" className={styles.contactSubmit}>
+                Send Message
+              </button>
             </form>
           </div>
-          <div className="contact-info-container">
-            <div className="contact-header">
-              <div className="contact-icon-circle">
-                <i className="ti ti-phone"></i>
+
+          {/* INFO */}
+          <div className={styles.contactInfoContainer}>
+            <div className={styles.contactHeader}>
+              <div className={styles.contactIconCircle}>
+                <i className="ti ti-phone" />
               </div>
-              <h3 className="contact-title">Contact Us</h3>
+              <h3 className={styles.contactTitle}>Contact Us</h3>
             </div>
-            <ul className="contact-list">
-              <li className="contact-item">
-                <i className="ti ti-phone contact-item-icon"></i>
-                <span>+1 (555) 123-4567</span>
+            <ul className={styles.contactList}>
+              <li className={styles.contactItem}>
+                <i className={`ti ti-phone ${styles.contactItemIcon}`} />
+                <span>+1 (555) 123‑4567</span>
               </li>
-              <li className="contact-item">
-                <i className="ti ti-mail contact-item-icon"></i>
+              <li className={styles.contactItem}>
+                <i className={`ti ti-mail ${styles.contactItemIcon}`} />
                 <span>contact@moodmusic.com</span>
               </li>
-              <li className="contact-item">
-                <i className="ti ti-map-pin contact-item-icon"></i>
-                <span>123 Music Street, Harmony City, MC 12345</span>
+              <li className={styles.contactItem}>
+                <i className={`ti ti-map-pin ${styles.contactItemIcon}`} />
+                <span>123 Music Street, Harmony City, MC 12345</span>
               </li>
             </ul>
           </div>

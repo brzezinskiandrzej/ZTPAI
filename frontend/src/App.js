@@ -1,32 +1,34 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import Playlist from "./pages/Playlist";
 import LandingPage from "./components/LandingPage";
 import InputDesign from "./pages/InputDesign";
 import MyAccount from "./components/MyAccount";
 import LoginRegistration from "./pages/LoginRegistration";
-// Note: These components would need to be created
+import PrivateRoute      from "./components/PrivateRoute";
+import SessionIndicator from "./components/SessionIndicator"; 
+
 import { Navigate } from "react-router-dom";
 import "./App.css";
 
 function App() {
   return (
+    <>
     <Router>
       <div className="app">
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/playlists/:userId" element={<Playlist />} />
           <Route path="/input" element={<InputDesign />} />
-          <Route path="/account" element={<MyAccount />} />
+          
+          
           <Route path="/login" element={<LoginRegistration />} />
-          <Route
-            path="/mood-check"
-            element={
-              <div className="placeholder-page">
-                Mood Check Page (To be implemented)
-              </div>
-            }
-          />
+          <Route element={<PrivateRoute />}>
+            <Route path="/playlist/:userId" element={<Playlist />} />
+            <Route path="/account" element={<MyAccount />} />
+            {/*   kolejne chronione trasy… */}
+          </Route>
+
           <Route
             path="/saved"
             element={
@@ -47,6 +49,8 @@ function App() {
         </Routes>
       </div>
     </Router>
+    <SessionIndicator/>
+    </>
   );
 }
 

@@ -1,8 +1,14 @@
 import React, { useState } from "react";
+import { useNavigate, useLocation  } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "./LoginRegistration.css";
+import { errorTranslations } from "../utils/errorMessages";
 
 function LoginRegistration() {
   const [isLogin, setIsLogin] = useState(true);
+  const { signin, signup } = useAuth();
+  const navigate = useNavigate();
+  const loc  = useLocation();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -10,9 +16,53 @@ function LoginRegistration() {
     confirmPassword: "",
     username: "",
   });
+  const [errors, setErrors] = useState({
+    global: "",
+    email: "",
+    password: "",
+    username: "",
+    confirmPassword: ""
+  });
+  const parseBackendError = (error) => {
+    try {
+      
+      if (error?.data?.error) {
+        const { code, field, message } = error.data.error;
+        
+        if (field && field !== "global") {
+          return {
+            field,
+            message: errorTranslations[code]?.message ?? message,
+            isFieldError: true // Nowa flaga
+          };
+        }
+        if (code === "auth/invalid-password-format") {
+          return {
+            field: "password",
+            message: `Hasło nie spełnia wymagań: ${message}`
+          };
+        }
+
+        
+
+
+      }
+      
+      return { 
+      field: "global", 
+      message: errorTranslations[error.data?.error?.code]?.message 
+        ?? error.data?.error?.message 
+        ?? "Nieznany błąd systemowy",
+        isFieldError: false
+    };
+    } catch(e) {
+      return { field: "global", message: "Błąd przetwarzania odpowiedzi",isFieldError: false };
+    }
+  };
 
   function toggleAuthMode() {
     setIsLogin(!isLogin);
+    setErrors({});
   }
 
   function getTitle() {
@@ -26,15 +76,78 @@ function LoginRegistration() {
   }
 
   function validateForm() {
-    // Basic validation logic here
-    return true;
+    const newErrors = {};
+    const { email, password, confirmPassword, username } = formData;
+
+    // Reset errors
+    setErrors({});
+
+    // Walidacja tylko dla rejestracji
+    if (!isLogin) {
+      if (!username) {
+        newErrors.username = "Username is required";
+      } else if (username.length < 3) {
+        newErrors.username = "Minimum 3 characters";
+      }
+    }
+
+    // Wspólna walidacja
+    if (!email) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Invalid email format";
+    }
+
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 8) {
+      newErrors.password = "Minimum 8 characters";
+    }
+
+    if (!isLogin && password !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords must match";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-    if (validateForm()) {
-      // Handle form submission
-      console.log("Form submitted:", formData);
+    setErrors({});
+    if (!validateForm()) return;
+
+    try {
+      let data;
+      if (isLogin) {
+        data = await signin(formData.email, formData.password);
+      } else {
+        await signup(formData);
+        data = await signin(formData.email, formData.password);
+      }
+
+      // przekierowanie – na zapamiętaną trasę lub /
+      const back = sessionStorage.getItem("MM_BACK");
+      const destination = back?.startsWith("/playlist/") 
+        ? `/playlist/${data.user.id}` 
+        : back || "/";
+        
+      sessionStorage.removeItem("MM_BACK");
+      navigate(destination, { replace: true });
+    }  catch (error) {
+      console.log("Surowy błąd z authService:", error);
+      
+      const parsedError = parseBackendError(error);
+      console.log("Sparsowany błąd:", parsedError);
+
+      setErrors(prev => ({
+        ...prev,
+        // Dodajemy tylko jeden rodzaj błędu
+        ...(parsedError.isFieldError 
+          ? { [parsedError.field]: parsedError.message }
+          : { global: parsedError.message }
+        )
+      }));
     }
   }
 
@@ -45,12 +158,39 @@ function LoginRegistration() {
       [name]: value,
     });
   }
+  const renderInput = (name, label, type = "text") => (
+    <div className="form-group">
+      <label className="form-label">{label}</label>
+      <input
+        type={type}
+        name={name}
+        value={formData[name]}
+        onChange={handleInputChange}
+        className={`form-input ${errors[name] ? "input-error" : ""}`}
+      />
+      {errors[name] && (
+        <span className="field-error">
+          {errors[name]}
+        </span>
+      )}
+    </div>
+  );
 
   return (
     <div className="auth-container">
       <nav className="auth-nav">
         <div className="nav-content">
-          <span className="logo">Logo</span>
+          <div
+            className="logo"
+            onClick={() => navigate("/")}
+            style={{ cursor: "pointer" }}
+          >
+            <img
+              src="/logo_mood_music.png"
+              alt="Mood Music Logo"
+              style={{ height: "40px", objectFit: "contain" }}
+            />
+          </div>
         </div>
       </nav>
       <div className="auth-content">
@@ -65,50 +205,23 @@ function LoginRegistration() {
             </div>
             <div className="auth-form-container">
               <form onSubmit={handleSubmit}>
-                {!isLogin && (
-                  <div className="form-group">
-                    <label className="form-label">Username</label>
-                    <input
-                      type="text"
-                      name="username"
-                      value={formData.username}
-                      onChange={handleInputChange}
-                      className="form-input"
-                    />
+                {/* Zmienione wszystkie pola na użycie renderInput */}
+                {!isLogin && renderInput("username", "Username")}
+                
+                {renderInput("email", "Email", "email")}
+                
+                {renderInput("password", "Password", "password")}
+
+                {!isLogin && renderInput("confirmPassword", "Confirm Password", "password")}
+
+                {errors.global &&
+                 !Object.entries(errors).some(([k, v]) => k !== "global" && v) && (
+                  <div className="global-error">
+                    <p className="error-msg">{errors.global}</p>
                   </div>
                 )}
-                <div className="form-group">
-                  <label className="form-label">Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="form-input"
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Password</label>
-                  <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className="form-input"
-                  />
-                </div>
-                {!isLogin && (
-                  <div className="form-group">
-                    <label className="form-label">Confirm Password</label>
-                    <input
-                      type="password"
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleInputChange}
-                      className="form-input"
-                    />
-                  </div>
-                )}
+
+                
                 <button type="submit" className="submit-btn">
                   {isLogin ? "Log In" : "Create Account"}
                 </button>

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import "./InputDesign.css";
+import { useNavigate  } from "react-router-dom";
+import styles from "./InputDesign.module.css";
 
 function InputDesign() {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const navigate = useNavigate();
   const [isDragging, setIsDragging] = useState(false);
-  const [items, setItems] = useState([
+  const [items] = useState([
     {
       id: "emotions",
       title: "Emotions",
@@ -76,11 +78,7 @@ function InputDesign() {
     const swipeThreshold = 50;
     const diff = touchStart - touchEnd;
     if (Math.abs(diff) > swipeThreshold) {
-      if (diff > 0) {
-        scrollNext();
-      } else {
-        scrollPrev();
-      }
+      diff > 0 ? scrollNext() : scrollPrev();
     }
   }
 
@@ -92,13 +90,11 @@ function InputDesign() {
     if (!inputValue.trim() || submitted) return;
     setSubmitted(true);
     setInputValue("");
-    setTimeout(() => {
-      setSubmitted(false);
-    }, 3000);
+    setTimeout(() => setSubmitted(false), 3000);
   }
 
   function adjustHeight() {
-    const textarea = document.querySelector(".mood-textarea");
+    const textarea = document.querySelector(`.${styles.moodTextarea}`);
     if (textarea) {
       textarea.style.height = "auto";
       textarea.style.height =
@@ -107,7 +103,7 @@ function InputDesign() {
   }
 
   return (
-    <div className="input-design">
+    <div className={styles.inputDesign}>
       <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap"
         rel="stylesheet"
@@ -118,231 +114,192 @@ function InputDesign() {
       />
 
       {/* Header */}
-      <div className="header">
-        <div className="logo">Logo</div>
-        <nav className="nav-menu">
-          <div className="nav-item">Home</div>
-          <div className="nav-item">Features</div>
-          <div className="nav-item">How It Works</div>
-          <div className="nav-item">Contact</div>
+      <div className={styles.header}>
+        <div
+          className="logo"
+          onClick={() => navigate("/")}
+          style={{ cursor: "pointer" }}
+        >
+          <img
+            src="/logo_mood_music.png"
+            alt="Mood Music Logo"
+            style={{ height: "40px", objectFit: "contain" }}
+          />
+        </div>
+        <nav className={styles.navMenu}>
+          <div className={styles.navItem}><Link to="/">Home</Link></div>
+          <div className={styles.navItem}>Features</div>
+          <div className={styles.navItem}>How It Works</div>
+          <div className={styles.navItem}>Contact</div>
         </nav>
         <button
-          className="menu-toggle"
+          className={styles.menuToggle}
           aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={isMobileMenuOpen}
           onClick={toggleMenu}
         >
-          <div className="hamburger">
+          <div className={styles.hamburger}>
             <span
-              className={`hamburger-line ${isMobileMenuOpen ? "rotate-down" : ""}`}
-            ></span>
+              className={`${styles.hamburgerLine} ${
+                isMobileMenuOpen ? styles.rotateDown : ""
+              }`}
+            />
             <span
-              className={`hamburger-line ${isMobileMenuOpen ? "hidden" : ""}`}
-            ></span>
+              className={`${styles.hamburgerLine} ${
+                isMobileMenuOpen ? styles.hidden : ""
+              }`}
+            />
             <span
-              className={`hamburger-line ${isMobileMenuOpen ? "rotate-up" : ""}`}
-            ></span>
+              className={`${styles.hamburgerLine} ${
+                isMobileMenuOpen ? styles.rotateUp : ""
+              }`}
+            />
           </div>
         </button>
         <div
-          className="mobile-menu"
+          className={styles.mobileMenu}
           style={{
-            transform: isMobileMenuOpen ? "translateX(0)" : "translateX(100%)",
+            transform: isMobileMenuOpen
+              ? "translateX(0)"
+              : "translateX(100%)",
           }}
         >
-          <div className="mobile-menu-content">
-            <div className="mobile-nav-item">Home</div>
-            <div className="mobile-nav-item">Features</div>
-            <div className="mobile-nav-item">How It Works</div>
-            <div className="mobile-nav-item">Contact</div>
+          <div className={styles.mobileMenuContent}>
+            <div className={styles.mobileNavItem}>Home</div>
+            <div className={styles.mobileNavItem}>Features</div>
+            <div className={styles.mobileNavItem}>How It Works</div>
+            <div className={styles.mobileNavItem}>Contact</div>
           </div>
         </div>
       </div>
 
       {/* Main content */}
       <div
-        className="type-box"
+        className={styles.typeBox}
         style={{
           backgroundImage:
             "url('https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=2070&auto=format&fit=crop')",
         }}
       >
-        <div className="mood-box">
-          <div className="mood-title">
-            <div className="find-music-button">
-              <span className="find-music-text">Find Your Music</span>
+        <div className={styles.moodBox}>
+          <div className={styles.moodTitle}>
+            <div className={styles.findMusicButton}>
+              <span className={styles.findMusicText}>Find Your Music</span>
             </div>
-            <span className="mood-subtitle">
+            <span className={styles.moodSubtitle}>
               Describe how are you feeling today!
             </span>
-            <div className="mood-description">
+            <div className={styles.moodDescription}>
               Talk about your mood in as much detail as possible
             </div>
           </div>
-          <div className="input-container">
-            <div className="input-wrapper">
-              <div className="textarea-container">
-                <div className="textarea-container">
-                  <textarea
-                    className="mood-textarea"
-                    placeholder="Tell me what you feel!"
-                    value={inputValue}
-                    disabled={submitted}
-                    onInput={(event) => {
-                      setInputValue(event.target.value);
-                      adjustHeight();
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" && !event.shiftKey) {
-                        event.preventDefault();
-                        handleSubmit();
-                      }
-                    }}
-                  />
-                  <button
-                    className="submit-button"
-                    disabled={submitted}
-                    onClick={handleSubmit}
-                    style={{
-                      backgroundColor: submitted
-                        ? "transparent"
-                        : "rgba(0, 0, 0, 0.05)",
-                    }}
-                  >
-                    {submitted ? (
-                      <div className="loading-indicator" />
-                    ) : (
-                      <i
-                        className="ti ti-corner-up-right submit-icon"
-                        style={{
-                          opacity: inputValue ? "1" : "0.3",
-                        }}
-                      />
-                    )}
-                  </button>
-                </div>
-                <p className="status-text">
+          <div className={styles.inputContainer}>
+            <div className={styles.inputWrapper}>
+              <div className={styles.textareaContainer}>
+                <textarea
+                  className={styles.moodTextarea}
+                  placeholder="Tell me what you feel!"
+                  value={inputValue}
+                  disabled={submitted}
+                  onInput={(e) => {
+                    setInputValue(e.target.value);
+                    adjustHeight();
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSubmit();
+                    }
+                  }}
+                />
+                <button
+                  className={styles.submitButton}
+                  disabled={submitted}
+                  onClick={handleSubmit}
+                  style={{
+                    backgroundColor: submitted
+                      ? "transparent"
+                      : "rgba(0, 0, 0, 0.05)",
+                  }}
+                >
                   {submitted ? (
-                    <span>AI is thinking...</span>
+                    <div className={styles.loadingIndicator} />
                   ) : (
-                    <span>Ready to submit!</span>
+                    <i
+                      className={`ti ti-corner-up-right ${styles.submitIcon}`}
+                      style={{ opacity: inputValue ? 1 : 0.3 }}
+                    />
                   )}
-                </p>
+                </button>
               </div>
+              <p className={styles.statusText}>
+                {submitted ? (<span>AI is thinking...</span>) : (<span>Ready to submit!</span>)}
+              </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Desktop examples section */}
-      <section className="examples-section">
-        <div className="examples-container">
-          <div className="examples-content">
-            <div className="examples-box">
-              <div className="examples-title-container">
-                <h2 className="examples-title">What can you enter?</h2>
+      {/* Desktop examples */}
+      <section className={styles.examplesSection}>
+        <div className={styles.examplesContainer}>
+          <div className={styles.examplesContent}>
+            <div className={styles.examplesBox}>
+              <div className={styles.examplesTitleContainer}>
+                <h2 className={styles.examplesTitle}>What can you enter?</h2>
               </div>
-              <div className="examples-grid">
-                <div className="examples-row">
-                  <div className="example-column">
-                    <div className="example-box example-box-one">
-                      <div className="example-content">
-                        <div className="example-text">
-                          <h5 className="example-title">Emotions</h5>
-                          <p className="example-description">
-                            <div>
-                              <span>
-                                What exactly do you feel at this moment
-                              </span>
-                              <br />
-                              <br />
-                            </div>
-                            <div>"I feel joy, I am happy"</div>
+              <div className={styles.examplesGrid}>
+                {items.map((item) => (
+                  <div key={item.id} className={styles.exampleColumn}>
+                    <div
+                      className={
+                        item.id === "emotions"
+                          ? styles.exampleBoxOne
+                          : item.id === "stories"
+                          ? styles.exampleBoxTwo
+                          : styles.exampleBoxThree
+                      }
+                    >
+                      <div className={styles.exampleContent}>
+                        <div className={styles.exampleText}>
+                          <h5 className={styles.exampleTitle}>{item.title}</h5>
+                          <p className={styles.exampleDescription}>
+                            {item.description.split("\n").map((line, i) => (
+                              <React.Fragment key={i}>
+                                {line}
+                                <br />
+                              </React.Fragment>
+                            ))}
                           </p>
                         </div>
-                        <div className="example-image-container">
+                        <div className={styles.exampleImageContainer}>
                           <img
-                            alt="Emotions example"
-                            src="https://cdn.builder.io/api/v1/image/assets%2Fbba7ad93b6cd465bbcc9098b789c5ec9%2F3737a7bdb7af4a8bb3d1c68157df39ba"
-                            className="example-image"
+                            src={item.image}
+                            alt={item.title}
+                            className={styles.exampleImage}
                           />
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="example-column">
-                    <div className="example-box example-box-two">
-                      <div className="example-content">
-                        <div className="example-text">
-                          <h5 className="example-title">Stories</h5>
-                          <p className="example-description">
-                            <div>
-                              Tell me about something that happened to you today
-                            </div>
-                            <div>
-                              <br />
-                            </div>
-                            <div>
-                              "I went to the gym and fell in love with a guy who
-                              worked out there"
-                            </div>
-                          </p>
-                        </div>
-                        <div className="example-image-container">
-                          <img
-                            alt="Stories example"
-                            src="https://cdn.builder.io/api/v1/image/assets%2Fbba7ad93b6cd465bbcc9098b789c5ec9%2Fdb6ea667c7504a2b8b57268ff04927b8"
-                            className="example-image"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="example-column">
-                    <div className="example-box example-box-three">
-                      <div className="example-content">
-                        <div className="example-text">
-                          <h5 className="example-title">Situation</h5>
-                          <p className="example-description">
-                            <div>
-                              Close your eyes and describe to us what you see,
-                              in what climate your imagination painted the
-                              picture
-                            </div>
-                            <div>
-                              <br />
-                            </div>
-                            <div>
-                              "I'm on the beach on vacation, dreams come true"
-                            </div>
-                          </p>
-                        </div>
-                        <div className="example-image-container">
-                          <img
-                            alt="Situation example"
-                            src="https://cdn.builder.io/api/v1/image/assets%2Fbba7ad93b6cd465bbcc9098b789c5ec9%2F3737a7bdb7af4a8bb3d1c68157df39ba"
-                            className="example-image"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
-              <div className="border-box"></div>
-              <span className="circle-icon"></span>
+              <div className={styles.borderBox} />
+              <span className={styles.circleIcon} />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Mobile examples section */}
-      <section className="mobile-examples-section">
-        <div className="mobile-examples-container">
-          <div className="mobile-examples-header">
-            <div className="mobile-examples-title-container">
-              <h2 className="mobile-examples-title">What can you enter?</h2>
-              <p className="mobile-examples-description">
+      {/* Mobile examples */}
+      <section className={styles.mobileExamplesSection}>
+        <div className={styles.mobileExamplesContainer}>
+          <div className={styles.mobileExamplesHeader}>
+            <div className={styles.mobileExamplesTitleContainer}>
+              <h2 className={styles.mobileExamplesTitle}>
+                What can you enter?
+              </h2>
+              <p className={styles.mobileExamplesDescription}>
                 Determine how it will be most convenient for you to describe
                 your mood today. We do not limit ourselves to just one template,
                 it is up to you to decide how to convey in words what you feel.
@@ -350,44 +307,44 @@ function InputDesign() {
                 inquiry are most welcome for us!
               </p>
             </div>
-            <div className="carousel-controls">
+            <div className={styles.carouselControls}>
               <button
-                className="carousel-button"
+                className={styles.carouselButton}
                 disabled={!canScrollPrev}
                 onClick={scrollPrev}
               >
-                <i className="ti ti-arrow-left carousel-icon" />
+                <i className={`ti ti-arrow-left ${styles.carouselIcon}`} />
               </button>
               <button
-                className="carousel-button"
+                className={styles.carouselButton}
                 disabled={!canScrollNext}
                 onClick={scrollNext}
               >
-                <i className="ti ti-arrow-right carousel-icon" />
+                <i className={`ti ti-arrow-right ${styles.carouselIcon}`} />
               </button>
             </div>
           </div>
         </div>
-        <div className="carousel-container">
+        <div className={styles.carouselContainer}>
           <div
-            className="carousel-track"
+            className={styles.carouselTrack}
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
             {items.map((item) => (
-              <div key={item.id} className="carousel-slide">
-                <div className="carousel-slide-content">
+              <div key={item.id} className={styles.carouselSlide}>
+                <div className={styles.carouselSlideContent}>
                   <img
-                    className="carousel-image"
                     src={item.image}
                     alt={item.title}
+                    className={styles.carouselImage}
                   />
-                  <div className="carousel-overlay" />
-                  <div className="carousel-text">
-                    <div className="carousel-title">{item.title}</div>
-                    <div className="carousel-description">
+                  <div className={styles.carouselOverlay} />
+                  <div className={styles.carouselText}>
+                    <div className={styles.carouselTitle}>{item.title}</div>
+                    <div className={styles.carouselDescription}>
                       {item.description}
                     </div>
                   </div>
@@ -395,18 +352,16 @@ function InputDesign() {
               </div>
             ))}
           </div>
-          <div className="carousel-indicators">
-            {items.map((_, index) => (
+          <div className={styles.carouselIndicators}>
+            {items.map((_, idx) => (
               <button
-                key={index}
-                className="carousel-indicator"
-                aria-label={`Go to slide ${index + 1}`}
-                onClick={() => scrollTo(index)}
+                key={idx}
+                className={styles.carouselIndicator}
+                aria-label={`Go to slide ${idx + 1}`}
+                onClick={() => scrollTo(idx)}
                 style={{
                   backgroundColor:
-                    currentSlide === index
-                      ? "rgba(255, 255, 255, 1)"
-                      : "transparent",
+                    currentSlide === idx ? "rgba(255,255,255,1)" : "transparent",
                 }}
               />
             ))}
@@ -415,32 +370,25 @@ function InputDesign() {
       </section>
 
       {/* Footer */}
-      <footer className="footer">
-        <div className="footer-links">
-          <a href="#" className="footer-link">
-            Terms & Conditions
+      <footer className={styles.footer}>
+        <div className={styles.footerLinks}>
+          <a href="#" className={styles.footerLink}>
+            Terms &amp; Conditions
           </a>
-          <a href="#" className="footer-link">
+          <a href="#" className={styles.footerLink}>
             Support
           </a>
-          <a href="#" className="footer-link">
+          <a href="#" className={styles.footerLink}>
             Log In
           </a>
         </div>
-        <div className="footer-divider"></div>
-        <div className="footer-social">
-          <a href="#" className="social-link">
-            <i className="ti ti-brand-instagram"></i>
-          </a>
-          <a href="#" className="social-link">
-            <i className="ti ti-brand-tiktok"></i>
-          </a>
-          <a href="#" className="social-link">
-            <i className="ti ti-brand-youtube"></i>
-          </a>
-          <a href="#" className="social-link">
-            <i className="ti ti-brand-facebook"></i>
-          </a>
+        <div className={styles.footerDivider} />
+        <div className={styles.footerSocial}>
+          {["instagram", "tiktok", "youtube", "facebook"].map((network) => (
+            <a key={network} href="#" className={styles.socialLink}>
+              <i className={`ti ti-brand-${network}`} />
+            </a>
+          ))}
         </div>
       </footer>
     </div>

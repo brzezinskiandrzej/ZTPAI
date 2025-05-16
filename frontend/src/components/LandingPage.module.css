@@ -1,0 +1,733 @@
+/* Base styles */
+.landingPage {
+  font-family: "Montserrat", sans-serif;
+}
+
+/* App Container */
+.appContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #1a1f2e;
+}
+
+/* Header */
+.mainHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  background-color: #1a1f2e;
+}
+
+.logo {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* --- menu --- */
+.navMenu {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.navItem {
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.ctaButton {
+  background-color: #e5a853;
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.menuToggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 30;
+}
+
+.hamburger {
+  width: 24px;
+  height: 18px;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hamburgerLine {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.rotateDown {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+
+.hidden {
+  opacity: 0;
+}
+
+.rotateUp {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* Hero Section */
+.heroSection {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 40px 0;
+}
+
+.heroOverlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: center;
+  opacity: 0.8;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 10;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  padding: 48px;
+  max-width: 700px;
+  backdrop-filter: blur(8px);
+  min-height: auto;
+  margin: 0 24px;
+}
+
+.heroTagline {
+  color: #333333;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.heroTitle {
+  color: #000000;
+  font-size: 48px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.heroDescription {
+  color: #333333;
+  font-size: 20px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.heroCtaContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.heroCtaButton {
+  background-color: #e5a853;
+  color: #ffffff;
+  padding: 16px 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* Playlists Section */
+.playlistsSection {
+  background-color: #1a1f2e;
+  padding: 64px 32px;
+}
+
+.playlistsContainer {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 48px;
+}
+
+.playlistsContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.playlistsTitle {
+  color: #000000;
+  font-size: 40px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.titleText {
+  line-height: normal;
+}
+
+.titleLarge {
+  font-size: 109px;
+}
+
+.playlistsDescription {
+  color: #333333;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.exploreButton {
+  background-color: #e5a853;
+  color: #ffffff;
+  padding: 40px;
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: center;
+  width: auto;
+  align-self: stretch;
+  max-width: 400px;
+  font-size: 31px;
+  margin-top: 74px;
+  font-weight: 600;
+}
+
+.playlistsImageContainer {
+  flex: 1;
+  max-width: 400px;
+}
+
+.playlistsImage {
+  aspect-ratio: 1;
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+  height: auto;
+  border-radius: 169px;
+  overflow: hidden;
+  border: 6px solid;
+  flex-grow: 0;
+  margin-top: 100px;
+  margin-bottom: 100px;
+}
+
+/* Mood Section */
+.moodSection {
+  background-color: #1a1f2e;
+  padding: 64px 32px;
+  position: relative;
+}
+
+.moodTitle {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  font-size: 79px;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+}
+
+/* How Section */
+.howSection {
+  padding: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+  overflow: hidden;
+}
+
+.howBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.3;
+  pointer-events: none;
+  height: 100%;
+  right: 0;
+  bottom: 0;
+  background-image: url(https://cdn.builder.io/api/v1/image/assets%2Fbba7ad93b6cd465bbcc9098b789c5ec9%2F8d01156c349545a2a4325bfca737200d);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.howContainer {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  gap: 48px;
+  padding: 64px 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.howContent {
+  flex: 0 0 33.333%;
+}
+
+.howCard {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+}
+
+.howHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-direction: column;
+}
+
+.howHeader i {
+  font-size: 24px;
+  color: #e5a853;
+}
+
+.howTitle {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.howDescription {
+  font-size: 16px;
+  color: #666666;
+  margin-bottom: 24px;
+}
+
+/* Accordion */
+.accordionContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.accordionItem {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 16px;
+}
+
+.accordionButton {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 8px 0;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.accordionContent {
+  height: 0;
+  opacity: 0;
+  visibility: hidden;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.accordionContent.active {
+  height: auto;
+  opacity: 1;
+  visibility: visible;
+}
+
+.accordionText {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #666666;
+  transition: padding 0.3s ease-in-out;
+  padding: 16px 0;
+}
+
+/* How image */
+.howImageContainer {
+  flex: 0 0 66.666%;
+}
+
+.howImage {
+  aspect-ratio: 1;
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Testimonials Section */
+.testimonialsSection {
+  background-color: #1a1f2e;
+  padding: 64px 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+.testimonialsBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url(https://r.mobirisesite.com/1250704/assets/images/photo-1470019693664-1d202d2c0907.jpeg);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.testimonialsContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.testimonialsContent {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 48px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.testimonialsList {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.testimonialCard {
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.testimonialWrapper {
+  display: flex;
+}
+
+.testimonialImg {
+  flex: 0 0 200px;
+  padding: 24px;
+  background-color: #f8f9fa;
+}
+
+.imageWrap {
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
+  overflow: hidden;
+  margin: 0 auto 16px;
+}
+
+.testimonialAvatar {
+  aspect-ratio: 1;
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.nameWrapper {
+  text-align: center;
+}
+
+.testimonialName {
+  font-size: 16px;
+  font-weight: 500;
+  color: #000000;
+  margin-bottom: 4px;
+}
+
+.testimonialRole {
+  font-size: 14px;
+  color: #666666;
+}
+
+.testimonialContent {
+  flex: 1;
+  padding: 24px;
+  background-color: #ffffff;
+}
+
+.testimonialText {
+  font-size: 20px;
+  line-height: 1.6;
+  color: #333333;
+}
+
+/* Contact Section */
+.contactSection {
+  background-color: #1a1f2e;
+  padding: 64px 32px;
+}
+
+.contactContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  gap: 48px;
+}
+
+.contactFormContainer,
+.contactInfoContainer {
+  flex: 1;
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+.contactHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.contactIconCircle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #e5a853;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contactIconCircle i {
+  font-size: 24px;
+  color: #ffffff;
+}
+
+.contactTitle {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.contactForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contactInput,
+.contactTextarea {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-family: "Montserrat", sans-serif;
+}
+
+.contactTextarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.contactSubmit {
+  background-color: #e5a853;
+  color: #ffffff;
+  padding: 16px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.contactList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+}
+
+.contactItemIcon {
+  color: #e5a853;
+}
+
+/* Media Queries */
+@media (max-width: 991px) {
+  .navMenu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 300px;
+    background-color: #1a1f2e;
+    flex-direction: column;
+    padding: 80px 32px;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 20;
+  }
+
+  .menuOpen {
+    transform: translateX(0);
+  }
+
+  .menuToggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+  }
+
+  .ctaButton {
+    order: -1;
+  }
+
+  .heroSection {
+    padding: 32px 0;
+  }
+
+  .heroContent {
+    padding: 32px;
+    max-width: 600px;
+  }
+
+  .playlistsContainer {
+    flex-direction: column;
+    padding: 32px;
+  }
+
+  .howContainer {
+    flex-direction: column;
+    gap: 32px;
+    padding: 32px 16px;
+  }
+
+  .howContent,
+  .howImageContainer {
+    flex: 1;
+  }
+
+  .titleLarge {
+    font-size: 79px;
+  }
+
+  .contactContainer {
+    flex-direction: column;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  .navMenu {
+    width: 250px;
+  }
+
+  .heroSection {
+    padding: 24px 0;
+  }
+
+  .heroContent {
+    padding: 24px;
+    margin: 0 16px;
+    max-width: 100%;
+  }
+
+  .heroTitle {
+    font-size: 36px;
+  }
+
+  .heroDescription {
+    font-size: 16px;
+  }
+
+  .playlistsSection,
+  .moodSection,
+  .testimonialsSection,
+  .contactSection {
+    padding: 32px 16px;
+  }
+
+  .playlistsContainer {
+    padding: 24px;
+    gap: 24px;
+  }
+
+  .playlistsTitle {
+    font-size: 32px;
+    margin-bottom: 16px;
+  }
+
+  .titleText {
+    line-height: 30px;
+  }
+
+  .titleLarge {
+    font-size: 45px;
+    line-height: 65px;
+  }
+
+  .playlistsDescription {
+    font-size: 16px;
+  }
+
+  .testimonialsContent {
+    padding: 24px;
+  }
+
+  .testimonialWrapper {
+    flex-direction: column;
+  }
+
+  .testimonialImg {
+    flex: none;
+  }
+
+  .testimonialText {
+    font-size: 18px;
+  }
+}

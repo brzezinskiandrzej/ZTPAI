@@ -1,1 +1,2 @@
-console.log("Hello from TypeScript!");
+import "reflect-metadata";
+

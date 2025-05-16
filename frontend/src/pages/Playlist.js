@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import {
-  fetchUserPlaylist,
-  updatePlayCount,
-  toggleFavorite,
+  usePlaylistApi
 } from "../services/playlistService";
 import MusicPlayer from "../components/MusicPlayer";
 import "./Playlist.css";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+
 
 function Playlist() {
   const [playlist, setPlaylist] = useState(null);
@@ -14,27 +15,38 @@ function Playlist() {
   const [error, setError] = useState(null);
   const [currentSong, setCurrentSong] = useState(null);
   const { userId } = useParams();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { fetchUserPlaylist, updatePlayCount, toggleFavorite } = usePlaylistApi();
+  const loadPlaylist = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchUserPlaylist(userId);
+      setPlaylist(data);
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadPlaylist = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchUserPlaylist(userId);
-        setPlaylist(data);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
-    };
-
+    if (user && user.id !== +userId) {
+      navigate(`/playlist/${user.id}`, { replace: true });
+      return;
+    }
     loadPlaylist();
-  }, []);
+  }, [userId, user]);
+
+  const refreshPlaylist = async () => {
+    console.log("Refreshing playlist...");
+    await loadPlaylist();
+  };
 
   const handlePlayTrack = async (track) => {
     try {
       if (track.id) {
-        await updatePlayCount(track.id);
+        await updatePlayCount(track.id,userId);
       }
       setCurrentSong({
         id: track.id,
@@ -42,6 +54,7 @@ function Playlist() {
         artist: track.artist,
         artwork: track.artwork,
         duration: track.duration,
+        audio_url: track.url,
       });
     } catch (err) {
       console.error("Error playing track:", err);
@@ -50,7 +63,7 @@ function Playlist() {
 
   const handleToggleFavorite = async (trackId, isFavorite) => {
     try {
-      await toggleFavorite(trackId, !isFavorite);
+      await toggleFavorite(trackId, !isFavorite,userId);
 
       setPlaylist((prevPlaylist) => ({
         ...prevPlaylist,
@@ -71,13 +84,28 @@ function Playlist() {
     return <div className="playlist-error">{error}</div>;
   }
 
+  const currentIndex =
+    currentSong && playlist
+      ? playlist.tracks.findIndex((t) => t.id === currentSong.id)
+      : -1;
+
   return (
     <div className="playlist-container">
       <header className="main-header">
-        <div className="logo">Logo</div>
+        <div
+          className="logo"
+          onClick={() => navigate("/")}
+          style={{ cursor: "pointer" }}
+        >
+          <img
+            src="/logo_mood_music.png"
+            alt="Mood Music Logo"
+            style={{ height: "40px", objectFit: "contain" }}
+          />
+        </div>
         <nav className="main-nav">
           <div className="nav-item">Playlists</div>
-          <div className="nav-item mood-check">Mood Check</div>
+          <div className="nav-item mood-check" onClick={refreshPlaylist}>Mood Check</div>
           <div className="nav-item">Saved</div>
         </nav>
         <div className="user-avatar"></div>
@@ -120,7 +148,12 @@ function Playlist() {
         </div>
       </div>
 
-      {currentSong && <MusicPlayer song={currentSong} />}
+      {currentSong && <MusicPlayer song={currentSong}
+      playlist={playlist.tracks}
+      currentIndex={currentIndex}
+      onChangeSong={(newSong, newIndex) =>
+        setCurrentSong({ ...newSong, currentIndex: newIndex })
+      } />}
     </div>
   );
 }
