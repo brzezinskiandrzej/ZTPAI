@@ -10,7 +10,7 @@ import { useAuth } from "../context/AuthContext";
 export default function PrivateRoute() {
   const { user,loading } = useAuth();
   const loc = useLocation();
-  if (loading) return <p style={{textAlign:"center",marginTop:"2rem"}}>⌛ sprawdzam sesję…</p>;
+  if (loading) return <div className="loading-spinner"></div>;
   if (!user) {
     // zapamiętaj ścieżkę, żeby po logowaniu wrócić
     sessionStorage.setItem("MM_BACK", loc.pathname);

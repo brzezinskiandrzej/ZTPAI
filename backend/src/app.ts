@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import { playlistRouter } from "./routes/playlist.controller";
-import { errorHandler } from "./middlewares/error.middleware";
+import errorHandler from "./middlewares/error.middleware";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "../swagger";
 import dotenv from 'dotenv';
@@ -18,12 +18,34 @@ app.use("/api", playlistRouter);
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(errorHandler);
 app.use(cors({
-  origin: ["http://localhost","http://localhost:80"],   // url, z którego serwujesz frontend
-  credentials: true
+  origin: "http://localhost:3000", 
+  credentials: true,
+  exposedHeaders: ['X-Error-Code', 'X-Error-Field'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(cookieParser());
 app.use('/api/auth', authRouter);
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+import { Request, Response, NextFunction } from "express";
+import AppError from "./middlewares/AppError";
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  if (err instanceof AppError) {
+    return res.status(err.statusCode).json({
+      error: {
+        code: err.code,
+        field: err.field,
+        message: err.message
+      }
+    });
+  }
+  
+  res.status(500).json({
+    error: {
+      code: "internal-error",
+      message: "Wewnętrzny błąd serwera"
+    }
+  });
+});
 
 // produkcyjny frontend – jeśli potrzebujesz
 if (process.env.NODE_ENV === "production") {

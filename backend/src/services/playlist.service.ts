@@ -10,14 +10,24 @@ import { LikedSong } from "../models/LikedSong";
 export async function getUserPlaylist(userId: number) {
   const userRepo = AppDataSource.getRepository(User);
   const user = await userRepo.findOneBy({ user_id: userId });
-  if (!user) throw new AppError(404, "User not found");
+  if (!user) throw new AppError(
+    404,
+    "playlist/user-not-found",
+    "Użytkownik nie istnieje",
+    "userId"
+  );
 
   const playlistRepo = AppDataSource.getRepository(Playlist);
   const playlist = await playlistRepo.findOne({
     where: { owner: { user_id: userId } },
     relations: ["playlistSongs", "playlistSongs.song", "playlistSongs.song.artist"],
   });
-  if (!playlist) throw new AppError(404, "Playlist not found for this user");
+  if (!playlist) throw new AppError(
+    404,
+    "playlist/not-found",
+    "Playlista nie znaleziona",
+    "playlistId"
+  );
 
   const tracks = playlist.playlistSongs
     .sort((a, b) => a.order_index - b.order_index)
@@ -38,7 +48,12 @@ export async function getUserPlaylist(userId: number) {
 export async function incrementPlay(trackId: number) {
     const songRepo = AppDataSource.getRepository(Song);
     const song = await songRepo.findOneBy({ song_id: trackId });
-    if (!song) throw new AppError(404, "Track not found");
+    if (!song) throw new AppError(
+      404,
+      "song/not-found",
+      "Utwór nie istnieje",
+      "trackId"
+    );
   
     song.play_count += 1;
     await songRepo.save(song);
@@ -54,7 +69,12 @@ export async function incrementPlay(trackId: number) {
     const likeRepo  = AppDataSource.getRepository(LikedSong);
   
     const song = await songRepo.findOneBy({ song_id: trackId });
-    if (!song) throw new AppError(404, "Track not found");
+    if (!song) throw new AppError(
+      404,
+      "song/not-found",
+      "Utwór nie istnieje",
+      "trackId"
+    );
   
     if (isFavorite) {
       const exists = await likeRepo.findOneBy({ user_id: userId, song_id: trackId });

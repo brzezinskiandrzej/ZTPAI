@@ -44,11 +44,12 @@ playlistRouter.get(
   validateNumericId("userId"),
   async (req: AuthReq, res, next) => {
     try {
-      const requested = +req.params.userId;
+      const requested = Number(req.params.userId);
       if (req.user!.userId !== requested && req.user!.role !== "admin")
         return res.status(403).json({ error: "Forbidden" });
 
       const data = await srv.getUserPlaylist(requested)
+      res.json(data);
     } catch (e) {
       next(e);
     }
@@ -75,7 +76,8 @@ playlistRouter.post(
   validateNumericId("trackId"),
   async (req, res, next) => {
     try {
-      const userId     = +(req.query.userId || 1);
+      const userId = req.user!.userId;
+
       const trackId    = +req.params.trackId;
       const { isFavorite } = req.body;
 

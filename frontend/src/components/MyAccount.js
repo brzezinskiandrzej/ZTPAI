@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import "./MyAccount.css";
+import { useNavigate  } from "react-router-dom";
 
 function MyAccount() {
   const [username, setUsername] = useState("Jan Kowalski");
   const [email, setEmail] = useState("jan@example.com");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [editingField, setEditingField] = useState(null);
+  const navigate = useNavigate();
   const [userFields, setUserFields] = useState([
     {
       id: "name",
@@ -36,7 +38,17 @@ function MyAccount() {
     <div className="account-page">
       <nav className="account-nav">
         <div className="account-nav-container">
-          <span className="account-logo">Logo</span>
+          <div
+            className="logo"
+            onClick={() => navigate("/")}
+            style={{ cursor: "pointer" }}
+          >
+            <img
+              src="/logo_mood_music.png"
+              alt="Mood Music Logo"
+              style={{ height: "40px", objectFit: "contain" }}
+            />
+          </div>
           <button
             className="logout-button"
             onClick={() => {

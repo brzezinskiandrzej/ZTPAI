@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate  } from "react-router-dom";
 import styles from "./InputDesign.module.css";
 
 function InputDesign() {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const navigate = useNavigate();
   const [isDragging, setIsDragging] = useState(false);
   const [items] = useState([
     {
@@ -113,7 +115,17 @@ function InputDesign() {
 
       {/* Header */}
       <div className={styles.header}>
-        <div className={styles.logo}>Logo</div>
+        <div
+          className="logo"
+          onClick={() => navigate("/")}
+          style={{ cursor: "pointer" }}
+        >
+          <img
+            src="/logo_mood_music.png"
+            alt="Mood Music Logo"
+            style={{ height: "40px", objectFit: "contain" }}
+          />
+        </div>
         <nav className={styles.navMenu}>
           <div className={styles.navItem}><Link to="/">Home</Link></div>
           <div className={styles.navItem}>Features</div>

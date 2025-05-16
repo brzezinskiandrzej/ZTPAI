@@ -2,10 +2,12 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "./LandingPage.module.css";
+import { useNavigate } from "react-router-dom";
 
 function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeAccordion, setActiveAccordion] = useState(-1);
+  const navigate = useNavigate();
 
   const accordionItems = [
     {
@@ -55,7 +57,17 @@ function LandingPage() {
       <div className={styles.appContainer}>
         {/* ---------------- HEADER ---------------- */}
         <header className={styles.mainHeader}>
-          <div className={styles.logo}>Logo</div>
+          <div
+            className="logo"
+            onClick={() => navigate("/")}
+            style={{ cursor: "pointer" }}
+          >
+            <img
+              src="/logo_mood_music.png"
+              alt="Mood Music Logo"
+              style={{ height: "40px", objectFit: "contain" }}
+            />
+          </div>
 
           <nav
             className={`${styles.navMenu} ${

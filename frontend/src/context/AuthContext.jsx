@@ -10,43 +10,73 @@ const LS_USER   = "MM_USER";        // <- przechowujemy również uproszczony us
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem(LS_TOKEN));
-  const [user,  setUser ] = useState(() => {
-    const u = localStorage.getItem(LS_USER);
-    if (u) return JSON.parse(u);
-    if (!token) return null;
-    try {                           // lepiej spróbować z tokenu (bez czekania na backend)
-      const { sub, role, username } = jwt_decode.default(token);
-      return { id: sub, role, username };
-    } catch { return null; }
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem(LS_USER);
+    if (storedUser) {
+      try {
+        const parsed = JSON.parse(storedUser);
+        if (parsed?.id && parsed?.username && parsed?.role) return parsed;
+      } catch {
+        localStorage.removeItem(LS_USER);
+      }
+    }
+
+    if (token) {
+      try {
+        const decoded = jwt_decode(token);
+        if (decoded.sub && decoded.username && decoded.role) {
+          return {
+            id: Number(decoded.sub),
+            username: decoded.username,
+            role: decoded.role
+          };
+        }
+      } catch (error) {
+        console.error("Błąd dekodowania tokenu:", error);
+      }
+    }
+    
+    localStorage.removeItem(LS_TOKEN);
+    return null;
   });
   const [loading, setLoading] = useState(!!token && !user);   // jeden render później
 
   /** helper zapisujący oba pola + localStorage */
   const setAuth = (u, t) => {
-    if (t) {
-      localStorage.setItem(LS_TOKEN, t);
-      setToken(t);
-    } else {
-      localStorage.removeItem(LS_TOKEN);
-      setToken(null);
-    }
-    if (u) {
-      localStorage.setItem(LS_USER, JSON.stringify(u));
-      setUser(u);
-    } else {
+    // Walidacja pełnej struktury
+    if (u && (!u.id || !u.username || !u.role)) {
+      console.error("Nieprawidłowa struktura użytkownika:", u);
       localStorage.removeItem(LS_USER);
+      localStorage.removeItem(LS_TOKEN);
       setUser(null);
+      setToken(null);
+      return;
     }
-  };
 
+    if (t) localStorage.setItem(LS_TOKEN, t);
+    else localStorage.removeItem(LS_TOKEN);
+    
+    if (u) localStorage.setItem(LS_USER, JSON.stringify(u));
+    else localStorage.removeItem(LS_USER);
+    
+    setUser(u);
+    setToken(t);
+  };
   /* ⇨ Jednorazowa próba „ożywienia” sesji z refresh-cookie  */
   useEffect(() => {
     (async () => {
-      if (!token) return;
+      if (!token) {
+        setLoading(false);
+        return;
+      }
       try {
         const data = await api.refresh();        // POST /refresh
         if (data?.accessToken) setAuth(data.user, data.accessToken);
-      } finally { setLoading(false); }
+      } catch (error) {
+        console.error("Refresh error:", error);
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);                                        // pierwszy render
 
@@ -59,15 +89,36 @@ export function AuthProvider({ children }) {
     }, 270_000);
     return () => clearInterval(id);
   }, [token]);
+  useEffect(() => {
+    // Usuń niekompletne dane przy pierwszym ładowaniu
+    const storedUser = localStorage.getItem(LS_USER);
+    if (storedUser) {
+      try {
+        const parsed = JSON.parse(storedUser);
+        if (!parsed.username || !parsed.role) {
+          localStorage.removeItem(LS_USER);
+          localStorage.removeItem(LS_TOKEN);
+        }
+      } catch {
+        localStorage.removeItem(LS_USER);
+        localStorage.removeItem(LS_TOKEN);
+      }
+    }
+  }, []);
 
   /* ---------- akcje ---------- */
   const signin = async (email, password) => {
-    const data = await api.login({ email, password });
-    setAuth(data.user, data.accessToken);
+    
+      const data = await api.login({ email, password });
+      setAuth(data.user, data.accessToken);
+      return data;
+    
   };
   const signup = async (payload) => {
-    await api.register(payload);
-    await signin(payload.email, payload.password);
+    
+      await api.register(payload);
+      return await signin(payload.email, payload.password);
+   
   };
   const signout = async () => {
     await api.logout();

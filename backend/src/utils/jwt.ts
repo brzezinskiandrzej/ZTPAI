@@ -8,7 +8,7 @@ assertIsString(process.env.ACCESS_TOKEN_SECRET,  "ACCESS_TOKEN_SECRET");
 assertIsString(process.env.REFRESH_TOKEN_SECRET, "REFRESH_TOKEN_SECRET");
 
 // tu ✨ rzutujemy – od tej pory to czysty string
-const accessTokenSecret  = process.env.ACCESS_TOKEN_SECRET;
+export const accessTokenSecret  = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 
 const accessTokenExpiry  = process.env.ACCESS_TOKEN_EXPIRY  || "15m";

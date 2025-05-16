@@ -147,8 +147,47 @@
 .submit-btn:hover {
   background-color: #d99b45;
 }
-.error-msg{color:#ff5c5c;margin:8px 0;font-size:14px}
 
+.global-error {
+  margin: 1rem 0;
+  text-align: center;
+  order: 100;
+}
+
+.form-input {
+  transition: border-color 0.3s ease;
+}
+
+.input-error {
+  border: 2px solid #ff4444 !important;
+  /*background-color: #fff6f6;*/
+}
+
+.field-error {
+  color: #ff4444;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  text-align: left;
+  display: block;
+}
+.error-msg {
+  background: #ff4444;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  display: inline-block;
+  max-width: 80%;
+  margin: 0 auto;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.auth-toggle-btn {
+  margin-top: 1rem;
+}
+.global-error:has(+ .field-error) {
+  display: none;
+}
 
 
 /* Footer */

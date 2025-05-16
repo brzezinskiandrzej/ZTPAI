@@ -5,6 +5,9 @@ import {
 import MusicPlayer from "../components/MusicPlayer";
 import "./Playlist.css";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+
 
 function Playlist() {
   const [playlist, setPlaylist] = useState(null);
@@ -12,6 +15,8 @@ function Playlist() {
   const [error, setError] = useState(null);
   const [currentSong, setCurrentSong] = useState(null);
   const { userId } = useParams();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const { fetchUserPlaylist, updatePlayCount, toggleFavorite } = usePlaylistApi();
   const loadPlaylist = async () => {
     try {
@@ -26,8 +31,12 @@ function Playlist() {
   };
 
   useEffect(() => {
+    if (user && user.id !== +userId) {
+      navigate(`/playlist/${user.id}`, { replace: true });
+      return;
+    }
     loadPlaylist();
-  }, [userId]);
+  }, [userId, user]);
 
   const refreshPlaylist = async () => {
     console.log("Refreshing playlist...");
@@ -83,7 +92,17 @@ function Playlist() {
   return (
     <div className="playlist-container">
       <header className="main-header">
-        <div className="logo">Logo</div>
+        <div
+          className="logo"
+          onClick={() => navigate("/")}
+          style={{ cursor: "pointer" }}
+        >
+          <img
+            src="/logo_mood_music.png"
+            alt="Mood Music Logo"
+            style={{ height: "40px", objectFit: "contain" }}
+          />
+        </div>
         <nav className="main-nav">
           <div className="nav-item">Playlists</div>
           <div className="nav-item mood-check" onClick={refreshPlaylist}>Mood Check</div>
