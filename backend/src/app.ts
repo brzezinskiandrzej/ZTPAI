@@ -8,6 +8,7 @@ import dotenv from 'dotenv';
 import cors         from "cors";
 import cookieParser from 'cookie-parser';
 import { authRouter } from './routes/auth.controller';
+import { accountRouter } from "./routes/account.controller";
 import "dotenv/config";
 
 
@@ -16,6 +17,7 @@ export const app = express();
 app.use(express.json());
 app.use("/api", playlistRouter);
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api/account", accountRouter);
 app.use(errorHandler);
 app.use(cors({
   origin: "http://localhost:3000", 

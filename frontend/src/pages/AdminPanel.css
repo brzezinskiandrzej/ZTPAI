@@ -1,0 +1,441 @@
+.admin-panel {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+}
+
+.admin-panel-title {
+  font-size: 28px;
+  margin-bottom: 24px;
+  font-weight: 600;
+}
+
+.admin-error-message {
+  background-color: rgba(255, 59, 59, 0.1);
+  color: #ff3b3b;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
+
+.admin-tab {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.admin-tab.active {
+  background-color: rgba(172, 126, 244, 0.1);
+  color: #ac7ef4;
+}
+
+.admin-tab:hover:not(.active) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.admin-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.admin-section-title {
+  font-size: 20px;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+/* Users Tab Styles */
+.admin-user-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.admin-user-card {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.admin-user-id {
+  margin-bottom: 12px;
+  padding: 8px;
+  background-color: rgba(172, 126, 244, 0.1);
+  border-radius: 4px;
+  color: #ac7ef4;
+  font-size: 14px;
+}
+
+.admin-user-field {
+  margin-bottom: 8px;
+}
+
+.admin-field-label {
+  opacity: 0.7;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+.admin-field-value {
+  font-size: 16px;
+}
+
+.admin-user-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.admin-view-details-btn {
+  padding: 12px;
+  width: 100%;
+  background-color: rgba(172, 126, 244, 0.1);
+  border: none;
+  border-radius: 4px;
+  color: #ac7ef4;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.admin-view-details-btn:hover {
+  background-color: rgba(172, 126, 244, 0.2);
+}
+
+.admin-ban-user-btn {
+  padding: 12px;
+  width: 100%;
+  background-color: rgba(255, 59, 59, 0.1);
+  border: none;
+  border-radius: 4px;
+  color: #ff3b3b;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.admin-ban-user-btn:hover {
+  background-color: rgba(255, 59, 59, 0.2);
+}
+
+/* Playlists Tab Styles */
+.admin-sort-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.admin-sort-by {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-sort-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.admin-sort-btn.active {
+  background-color: rgba(172, 126, 244, 0.1);
+  color: #ac7ef4;
+}
+
+.admin-sort-order-btn {
+  background-color: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.admin-playlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.admin-playlist-card {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.admin-playlist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.admin-playlist-name {
+  font-size: 18px;
+  margin: 0;
+}
+
+.admin-playlist-songs {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.admin-playlist-info {
+  margin-bottom: 16px;
+}
+
+.admin-playlist-owner,
+.admin-playlist-date {
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.admin-delete-playlist-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: rgba(255, 59, 59, 0.1);
+  border: none;
+  border-radius: 4px;
+  color: #ff3b3b;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.admin-delete-playlist-btn:hover {
+  background-color: rgba(255, 59, 59, 0.2);
+}
+
+/* Logs Tab Styles */
+.admin-logs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-log-entry {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.admin-log-timestamp {
+  font-size: 14px;
+  color: #ac7ef4;
+  margin-bottom: 8px;
+}
+
+.admin-log-mood,
+.admin-log-detection {
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.admin-log-label {
+  opacity: 0.7;
+  margin-right: 4px;
+}
+
+/* Modal Styles */
+.admin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.admin-modal-content {
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  padding: 24px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+}
+
+.admin-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.admin-modal-title {
+  font-size: 22px;
+  margin-bottom: 16px;
+}
+
+.admin-modal-info {
+  margin-bottom: 24px;
+}
+
+.admin-modal-field {
+  margin-bottom: 12px;
+}
+
+.admin-modal-label {
+  opacity: 0.7;
+  margin-right: 8px;
+}
+
+.admin-modal-value {
+  font-weight: 500;
+}
+
+.admin-modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.admin-modal-reset-btn {
+  flex: 1;
+  padding: 12px;
+  background-color: rgba(172, 126, 244, 0.1);
+  border: none;
+  border-radius: 4px;
+  color: #ac7ef4;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.admin-modal-ban-btn {
+  flex: 1;
+  padding: 12px;
+  background-color: rgba(255, 59, 59, 0.1);
+  border: none;
+  border-radius: 4px;
+  color: #ff3b3b;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* Mobile Styles */
+.admin-mobile-users {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .admin-user-grid,
+  .admin-playlist-grid {
+    display: none;
+  }
+
+  .admin-mobile-users {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .admin-mobile-user-card {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .admin-mobile-user-id {
+    margin-bottom: 12px;
+    padding: 8px;
+    background-color: rgba(172, 126, 244, 0.1);
+    border-radius: 4px;
+    color: #ac7ef4;
+    font-size: 14px;
+  }
+
+  .admin-mobile-user-field {
+    margin-bottom: 8px;
+  }
+
+  .admin-mobile-field-label {
+    opacity: 0.7;
+    margin-bottom: 4px;
+    font-size: 12px;
+  }
+
+  .admin-mobile-field-value {
+    font-size: 16px;
+  }
+
+  .admin-mobile-user-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .admin-mobile-view-details-btn {
+    padding: 12px;
+    width: 100%;
+    background-color: rgba(172, 126, 244, 0.1);
+    border: none;
+    border-radius: 4px;
+    color: #ac7ef4;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .admin-mobile-ban-user-btn {
+    padding: 12px;
+    width: 100%;
+    background-color: rgba(255, 59, 59, 0.1);
+    border: none;
+    border-radius: 4px;
+    color: #ff3b3b;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .admin-tabs {
+    overflow-x: auto;
+    padding-bottom: 12px;
+  }
+
+  .admin-sort-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .admin-modal-content {
+    width: 95%;
+    padding: 16px;
+  }
+
+  .admin-modal-actions {
+    flex-direction: column;
+  }
+}

@@ -88,3 +88,32 @@ export async function incrementPlay(trackId: number) {
     await likeRepo.delete({ user_id: userId, song_id: trackId });
     return { isFavorite: false };
   }
+
+
+
+export async function getSavedPlaylists(ownerId:number){
+  const repo = AppDataSource.getRepository(Playlist);
+  const rows = await repo
+    .createQueryBuilder("p")
+    .leftJoin("p.playlistSongs", "ps")
+    .select([
+      "p.playlist_id   AS id",
+      "p.name          AS name",
+      "p.created_at    AS createdAt",
+      "COUNT(ps.song_id) AS tracks"
+    ])
+    .where("p.ownerUserId = :ownerId", { ownerId })
+    .groupBy("p.playlist_id")
+    .orderBy("p.created_at", "DESC")
+    .getRawMany();
+  if (rows.length === 0)
+    throw new AppError(
+      404,
+      "playlist/none-found",
+      "Użytkownik nie ma zapisanych playlist",
+      "userId"
+    );
+
+  return rows;   // [{id,name,createdAt,tracks}]
+}
+
