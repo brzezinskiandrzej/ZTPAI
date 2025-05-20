@@ -1,136 +1,217 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./MyAccount.css";
 import { useNavigate  } from "react-router-dom";
+import { useAuth }       from "../context/AuthContext";
+import { useAccountApi } from "../services/accountService";
 
 function MyAccount() {
-  const [username, setUsername] = useState("Jan Kowalski");
-  const [email, setEmail] = useState("jan@example.com");
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [editingField, setEditingField] = useState(null);
-  const navigate = useNavigate();
-  const [userFields, setUserFields] = useState([
-    {
-      id: "name",
-      label: "Name",
-      value: "John Smith",
-    },
-    {
-      id: "email",
-      label: "Email",
-      value: "john@example.com",
-    },
-  ]);
+  const { user, signout } = useAuth();
+  const api       = useAccountApi();
+  const navigate  = useNavigate();
 
-  function toggleSettings() {
-    setIsSettingsOpen(!isSettingsOpen);
-  }
+  const [profile,  setProfile ] = useState({ username:"", email:"" });
+  const [form,     setForm    ] = useState({ username:"", email:"", oldPwd:"", newPwd:"" });
+  const [editing,  setEditing ] = useState({ username:false, email:false, password:false });
+  const [showPwd,  setShowPwd ] = useState(false);
+  const [showSaved , setShowSaved ] = useState(false); 
+  const [savedFetched, setSavedFetched] = useState(false);
+  const [likes,    setLikes   ] = useState([]);  
+  const [saved,    setSaved   ] = useState([]);   
+  const [isSettingsOpen,setIsSettingsOpen] = useState(false);
 
-  function startEditing(fieldId) {
-    setEditingField(fieldId);
-  }
+  /* ---------- init ---------- */
+  useEffect(()=>{ (async ()=>{
+      const p = await api.getProfile();          // GET /api/account
+      setProfile(p);
+      setForm(f=>({ ...f, username:p.username, email:p.email }));
+      setLikes(await api.getLikes());            // GET /api/account/likes
+      setSaved(await api.getSaved());            // GET /api/account/playlists
+      setSaved(await api.getSavedPlaylists());
+  })(); },[]);
 
-  function confirmEdit(fieldId) {
-    setEditingField(null);
-    // Here you would typically save the changes
-  }
+  /* ---------- helpers ---------- */
+  const startEdit  = fld => setEditing(e=>({ ...e, [fld]:true  }));
+  const cancelEdit = fld => setEditing(e=>({ ...e, [fld]:false }));
+  const onChange   = e   => setForm({ ...form, [e.target.name]:e.target.value });
+
+  const saveField  = async fld =>{
+    await api.update({ [fld]: form[fld] });      // PATCH /api/account
+    setProfile(p=>({ ...p, [fld]:form[fld] }));
+    cancelEdit(fld);
+  };
+  const savePass   = async ()=>{
+    await api.changePass({ oldPassword:form.oldPwd, newPassword:form.newPwd });
+    setForm(f=>({ ...f, oldPwd:"", newPwd:"" }));
+    cancelEdit("password");
+  };
+  const logout     = async ()=>{ await signout(); navigate("/"); };
+  const togglePwd  = ()=> setShowPwd(s=>!s);
+  const toggleSettings = ()=> setIsSettingsOpen(o=>!o);
+  const toggleSaved = async () => {
+    if (!showSaved && !savedFetched) {
+      const list = await api.getSavedPlaylists();
+      setSaved(list);
+      setSavedFetched(true);
+    }
+      
+
+    setShowSaved(!showSaved);
+  };
+
+  /* ---------- komponent pomocniczy – jeden wiersz ---------- */
+  const Row = ({ id,label, children, onSave })=>(
+    <div className="field-row">
+      <div className="field-container">
+        <label className="field-label">{label}</label>
+        {children}
+      </div>
+      <button
+        className="edit-button"
+        onClick={ editing[id] ? onSave : ()=>startEdit(id) }
+      >
+        {editing[id] ? "Confirm changes" : "Modify"}
+      </button>
+    </div>
+  );
 
   return (
-    <div className="account-page">
+   <div className="account-page">
+      {/* ───── NAV ───── */}
       <nav className="account-nav">
         <div className="account-nav-container">
-          <div
-            className="logo"
-            onClick={() => navigate("/")}
-            style={{ cursor: "pointer" }}
-          >
-            <img
-              src="/logo_mood_music.png"
-              alt="Mood Music Logo"
-              style={{ height: "40px", objectFit: "contain" }}
-            />
+          <div className="logo" onClick={()=>navigate("/")} style={{cursor:"pointer"}}>
+            <img src="/logo_mood_music.png" alt="Mood Music Logo" style={{height:"40px",objectFit:"contain"}} />
           </div>
-          <button
-            className="logout-button"
-            onClick={() => {
-              // Add logout logic here
-              console.log("Logging out...");
-            }}
-          >
-            Log Out
-          </button>
+          <button className="logout-button" onClick={logout}>Log Out</button>
         </div>
       </nav>
+
+      {/* ───── TREŚĆ ───── */}
       <div className="account-content">
         <div className="account-card">
+
+          {/* --------- avatar + powitanie --------- */}
           <div className="profile-header">
-            <img
-              src="https://placehold.co/120x120"
-              className="profile-avatar"
-              alt="User avatar"
-            />
-            <h2 className="profile-greeting">
-              <span>Hi, </span>
-              <span>{username}</span>
-            </h2>
+            <img src="https://placehold.co/120x120" className="profile-avatar" alt="Avatar"/>
+            <h2 className="profile-greeting">Hi,&nbsp;{profile.username}</h2>
           </div>
+
+          {/* --------- dane użytkownika --------- */}
           <div className="user-fields-container">
-            <button onClick={toggleSettings} className="settings-button">
-              ⚙️
-            </button>
-            {userFields.map((field) => (
-              <div key={field.id} className="field-row">
-                <div className="field-container">
-                  <label className="field-label">{field.label}</label>
+            <button onClick={toggleSettings} className="settings-button">⚙️</button>
+
+            {/* USERNAME */}
+            <Row id="username" label="Name" onSave={()=>saveField("username")}>
+              <input
+                name="username"
+                type="text"
+                value={form.username}
+                readOnly={!editing.username}
+                onChange={onChange}
+                autoFocus={editing.username} 
+                className="field-input"
+              />
+            </Row>
+
+            {/* E-MAIL */}
+            <Row id="email" label="Email" onSave={()=>saveField("email")}>
+              <input
+                name="email"
+                type="email"
+                value={form.email}
+                readOnly={!editing.email}
+                onChange={onChange}
+                autoFocus={editing.email}
+                className="field-input"
+              />
+            </Row>
+
+            {/* PASSWORD */}
+            <Row id="password" label="Password" onSave={savePass}>
+              {editing.password ? (
+                <>
                   <input
-                    type="text"
-                    value={field.value}
-                    readOnly={editingField !== field.id}
+                    name="oldPwd"
+                    type={showPwd?"text":"password"}
+                    placeholder="Current password"
+                    value={form.oldPwd}
+                    onChange={onChange}
+                    autoFocus={editing.oldPwd}
                     className="field-input"
+                    style={{marginBottom:"6px"}}
                   />
-                </div>
-                <button
-                  className="edit-button"
-                  onClick={() =>
-                    editingField === field.id
-                      ? confirmEdit(field.id)
-                      : startEditing(field.id)
-                  }
-                >
-                  {editingField === field.id ? (
-                    <span>Confirm changes</span>
-                  ) : (
-                    <span>Modify</span>
-                  )}
-                </button>
-              </div>
-            ))}
+                  <div style={{position:"relative"}}>
+                    <input
+                      name="newPwd"
+                      type={showPwd?"text":"password"}
+                      placeholder="New password"
+                      value={form.newPwd}
+                      onChange={onChange}
+                      autoFocus={editing.newPwd}
+                      className="field-input"
+                    />
+                    <span
+                      className="eye"
+                      style={{position:"absolute",right:"10px",top:"10px"}}
+                      onClick={togglePwd}
+                    >{showPwd ? "🙈" : "👁️"}</span>
+                  </div>
+                </>
+              ) : (
+                <input
+                  type="password"
+                  readOnly
+                  value="********"
+                  className="field-input"
+                />
+              )}
+            </Row>
           </div>
+
+          {/* --------- akcje (na razie linki „martwe”) --------- */}
           <div className="account-actions">
-            <a href="#polubione" className="action-link">
-              Liked
-            </a>
-            <a href="#zapisane" className="action-link">
+            <a href="#likes"  className="action-link" onClick={e=>{e.preventDefault(); navigate(`/playlist/liked`);}}>Liked</a>
+            <button className="action-link" onClick={toggleSaved}>
               Saved Playlists
-            </a>
+            </button>
+            {showSaved && saved.length === 0 && (
+              <p style={{color:"#e5a853",textAlign:"center"}}>Brak zapisanych playlist</p>
+            )}
+
           </div>
+          {showSaved && saved.length > 0 && (
+            <table className="saved-table">
+              <thead><tr><th>Name</th><th>Tracks</th><th>Open</th></tr></thead>
+              <tbody>
+                {saved.map(pl=>(
+                  <tr key={pl.id}>
+                    <td>{pl.name}</td>
+                    <td>{pl.tracks}</td>
+                    <td>
+                      <button onClick={()=>navigate(`/playlist/${user.id}/${pl.id}`)}>
+                        ▶
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}       
+          {/* --------- SETTINGS MODAL (bez zmian) --------- */}
           {isSettingsOpen && (
             <div className="settings-modal-overlay">
               <div className="settings-modal">
                 <div className="settings-header">
                   <h3 className="settings-title">Advanced Settings</h3>
-                  <button onClick={toggleSettings} className="close-button">
-                    ✕
-                  </button>
+                  <button onClick={toggleSettings} className="close-button">✕</button>
                 </div>
                 <div className="eq-placeholder">EQ Placeholder</div>
                 <div className="settings-options">
                   <label className="settings-option">
-                    <input type="checkbox" />
-                    <span className="option-text">Notifications</span>
+                    <input type="checkbox"/><span className="option-text">Notifications</span>
                   </label>
                   <label className="settings-option">
-                    <input type="checkbox" />
-                    <span className="option-text">Newsletter</span>
+                    <input type="checkbox"/><span className="option-text">Newsletter</span>
                   </label>
                 </div>
               </div>

@@ -4,6 +4,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import Playlist from "./pages/Playlist";
 import LandingPage from "./components/LandingPage";
 import InputDesign from "./pages/InputDesign";
+import AdminPanel from "./pages/AdminPanel";
 import MyAccount from "./components/MyAccount";
 import LoginRegistration from "./pages/LoginRegistration";
 import PrivateRoute      from "./components/PrivateRoute";
@@ -20,7 +21,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/input" element={<InputDesign />} />
-          
+          <Route path="/admin" element={<AdminPanel />} />
           
           <Route path="/login" element={<LoginRegistration />} />
           <Route element={<PrivateRoute />}>

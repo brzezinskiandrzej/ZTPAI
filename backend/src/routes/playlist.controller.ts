@@ -39,6 +39,16 @@ export const playlistRouter = Router();
  *       404: { description: Not Found }
  */
 playlistRouter.get(
+  "/playlist/mine",
+  requireAuth,
+  async (req:AuthReq, res, next) => {
+    try {
+      const data = await srv.getSavedPlaylists(req.user!.userId);
+      res.json(data);                        
+    } catch (e) { next(e); }
+  }
+);
+playlistRouter.get(
   "/playlist/:userId",
   requireAuth,
   validateNumericId("userId"),
@@ -91,6 +101,7 @@ playlistRouter.post(
     }
   }
 );
+
 
 
 
