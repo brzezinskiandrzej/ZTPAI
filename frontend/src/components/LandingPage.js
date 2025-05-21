@@ -2,12 +2,14 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "./LandingPage.module.css";
+import { useAuth }        from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeAccordion, setActiveAccordion] = useState(-1);
   const navigate = useNavigate();
+  const { user }     = useAuth(); 
 
   const accordionItems = [
     {
@@ -105,7 +107,17 @@ function LandingPage() {
             </div>
           </button>
 
-          <div className={styles.ctaButton}>Get Started</div>
+          {user ? (
+            
+            <div className={styles.ctaButton} onClick={() => navigate("/account")}>
+              {user.username}
+            </div>
+          ) : (
+            
+            <div className={styles.ctaButton} onClick={() => navigate("/login")}>
+              Get&nbsp;Started
+            </div>
+          )}
         </header>
 
         {/* ---------------- HERO ---------------- */}

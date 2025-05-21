@@ -288,7 +288,14 @@
 .saved-table th,
 .saved-table td         { padding:10px 6px; border-bottom:1px solid rgba(255,255,255,.1); }
 .saved-table button     { background:#e5a853; border:none; border-radius:4px; width:34px; height:34px; cursor:pointer; }
-
+#savedInfo{
+  margin: 10px;
+}
+.error-box{
+    text-align: center;
+    color: rgb(229, 168, 83);
+    margin: 10px;
+}
 /* Media Queries */
 @media (max-width: 640px) {
   .account-card {

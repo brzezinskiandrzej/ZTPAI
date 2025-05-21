@@ -88,6 +88,8 @@ authRouter.post("/login", async (req, res, next) => {
         "email"
       );
     }
+    if (user.is_banned)
+      throw new AppError(403,"auth/user-banned","Konto zostało zablokowane","global");
 
     const ok = await bcrypt.compare(password, user.password_hash);
     if (!ok) {

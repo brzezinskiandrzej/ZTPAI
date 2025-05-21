@@ -9,6 +9,7 @@ import MyAccount from "./components/MyAccount";
 import LoginRegistration from "./pages/LoginRegistration";
 import PrivateRoute      from "./components/PrivateRoute";
 import SessionIndicator from "./components/SessionIndicator"; 
+import RequireRole from "./components/RequireRole"; 
 
 import { Navigate } from "react-router-dom";
 import "./App.css";
@@ -27,6 +28,9 @@ function App() {
           <Route element={<PrivateRoute />}>
             <Route path="/playlist/:userId" element={<Playlist />} />
             <Route path="/account" element={<MyAccount />} />
+            <Route element={<RequireRole role="admin" />}>
+              <Route path="/admin" element={<AdminPanel />} />
+            </Route>
             {/*   kolejne chronione trasy… */}
           </Route>
 
