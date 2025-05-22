@@ -15,7 +15,7 @@ const router = express.Router();
 
 
 
-// src/routes/playlist.controller.ts
+
 import { Router } from "express";
 import { validateNumericId } from "../middlewares/validateId";
 import * as srv from "../services/playlist.service";
@@ -48,6 +48,24 @@ playlistRouter.get(
     } catch (e) { next(e); }
   }
 );
+/**
+ * @openapi
+ * /playlist/{userId}:
+ *   get:
+ *     tags: [Playlist]
+ *     summary: Pełna play-lista użytkownika
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200: { description: OK }
+ *       403: { $ref: '#/components/schemas/Error' }
+ *       404: { $ref: '#/components/schemas/Error' }
+ */
 playlistRouter.get(
   "/playlist/:userId",
   requireAuth,
@@ -66,7 +84,23 @@ playlistRouter.get(
   }
 );
 
-// analogicznie POST /tracks/:id/play  & /tracks/:id/favorite
+/**
+ * @openapi
+ * /tracks/{trackId}/play:
+ *   post:
+ *     tags: [Playlist]
+ *     summary: Inkrementuje licznik odtworzeń utworu
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: trackId
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200: { description: OK }
+ *       401: { $ref: '#/components/schemas/Error' }
+ */
 playlistRouter.post(
   "/tracks/:trackId/play",
   requireAuth,
@@ -80,6 +114,34 @@ playlistRouter.post(
     }
   }
 );
+/**
+ * @openapi
+ * /tracks/{trackId}/favorite:
+ *   post:
+ *     tags: [Playlist]
+ *     summary: Dodaje/usuwa ulubione
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: trackId
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [isFavorite]
+ *             properties:
+ *               isFavorite: { type: boolean }
+ *     responses:
+ *       201: { description: Dodano do ulubionych }
+ *       200: { description: Usunięto z ulubionych }
+ *       401: { $ref: '#/components/schemas/Error' }
+ *       422: { $ref: '#/components/schemas/Error' }
+ */
 playlistRouter.post(
   "/tracks/:trackId/favorite",
   requireAuth,

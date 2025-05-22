@@ -3,7 +3,7 @@ import path from "path";
 import { playlistRouter } from "./routes/playlist.controller";
 import errorHandler from "./middlewares/error.middleware";
 import swaggerUi from "swagger-ui-express";
-import swaggerSpec from "../swagger";
+import { swaggerSpec } from "./docs/swagger";
 import dotenv from 'dotenv';
 import cors         from "cors";
 import cookieParser from 'cookie-parser';

@@ -127,10 +127,10 @@ function InputDesign() {
           />
         </div>
         <nav className={styles.navMenu}>
-          <div className={styles.navItem}><Link to="/">Home</Link></div>
-          <div className={styles.navItem}>Features</div>
-          <div className={styles.navItem}>How It Works</div>
-          <div className={styles.navItem}>Contact</div>
+          <div className={styles.navItem} onClick={() => navigate("/#home")} >Home</div>
+          <div className={styles.navItem} onClick={() => navigate("/#features")}>Features</div>
+          <div className={styles.navItem} onClick={() => navigate("/#how")}>How It Works</div>
+          <div className={styles.navItem} onClick={() => navigate("/#contact")}>Contact</div>
         </nav>
         <button
           className={styles.menuToggle}
@@ -166,9 +166,9 @@ function InputDesign() {
         >
           <div className={styles.mobileMenuContent}>
             <div className={styles.mobileNavItem}>Home</div>
-            <div className={styles.mobileNavItem}>Features</div>
-            <div className={styles.mobileNavItem}>How It Works</div>
-            <div className={styles.mobileNavItem}>Contact</div>
+            <div className={styles.mobileNavItem} onClick={() => {navigate("/#features"); setIsMobileMenuOpen(false);}}>Features</div>
+            <div className={styles.mobileNavItem} onClick={() => {navigate("/#how"); setIsMobileMenuOpen(false);}}>How It Works</div>
+            <div className={styles.mobileNavItem} onClick={() => {navigate("/#contact"); setIsMobileMenuOpen(false);}}>Contact</div>
           </div>
         </div>
       </div>

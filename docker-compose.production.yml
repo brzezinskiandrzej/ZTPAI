@@ -20,6 +20,8 @@ services:
       NODE_ENV: "production"
       ACCESS_TOKEN_SECRET:  "leTK82maWBeXH7hO6lw"
       REFRESH_TOKEN_SECRET: "iEDAw1YbJroBaBt8D9R"
+      RABBIT_URL: "amqp://rabbit:5672"
+
     depends_on:
       - db
     networks:
@@ -61,6 +63,14 @@ services:
       test: [ "CMD", "pg_isready", "-U", "user", "-d", "mydatabase" ]
       interval: 3s
       retries: 10
+  
+  rabbit:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"  
+      - "15672:15672" 
+    networks:
+      - app-network
 volumes:
   db-data:
 

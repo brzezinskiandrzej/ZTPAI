@@ -31,7 +31,7 @@ function App() {
             <Route element={<RequireRole role="admin" />}>
               <Route path="/admin" element={<AdminPanel />} />
             </Route>
-            {/*   kolejne chronione trasy… */}
+            
           </Route>
 
           <Route

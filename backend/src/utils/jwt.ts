@@ -1,4 +1,4 @@
-// src/utils/jwt.ts
+
 import { assertIsString } from "./assert";
 import jwt, { SignOptions, JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -7,7 +7,6 @@ dotenv.config();
 assertIsString(process.env.ACCESS_TOKEN_SECRET,  "ACCESS_TOKEN_SECRET");
 assertIsString(process.env.REFRESH_TOKEN_SECRET, "REFRESH_TOKEN_SECRET");
 
-// tu ✨ rzutujemy – od tej pory to czysty string
 export const accessTokenSecret  = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 

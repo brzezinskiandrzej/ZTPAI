@@ -8,7 +8,32 @@ import AppError from "../middlewares/AppError";
 export const authRouter = Router();
 const userRepo = () => AppDataSource.getRepository(User);
 
-// *****  POST /api/auth/register  *****
+/**
+ * @openapi
+ * /auth/register:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Rejestracja nowego użytkownika
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/User'
+ *     responses:
+ *       201:
+ *         description: Utworzono
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Walidacja nie powiodła się
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 authRouter.post("/register", async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
@@ -67,7 +92,37 @@ authRouter.post("/register", async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-// *****  POST /api/auth/login  *****
+/**
+ * @openapi
+ * /auth/login:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Logowanie użytkownika
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email,password]
+ *             properties:
+ *               email:    { type: string, format: email }
+ *               password: { type: string, format: password }
+ *     responses:
+ *       200:
+ *         description: Zalogowano
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken: { type: string }
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *       400: { $ref: '#/components/schemas/Error' }
+ *       401: { $ref: '#/components/schemas/Error' }
+ *       404: { $ref: '#/components/schemas/Error' }
+ */
 authRouter.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -101,27 +156,38 @@ authRouter.post("/login", async (req, res, next) => {
       );
     }
 
-    // 1) access‑token w JS‑ie → header / pamięć aplikacji
+   
     const access = signAccessToken({
       sub: user.user_id,
       role: user.role,
       username: user.username
     });
 
-    // 2) refresh‑token w HttpOnly cookie
+
     const refresh = signRefreshToken({ sub: user.user_id });
     res.cookie("refreshToken", refresh, {
       httpOnly: true,
       sameSite : "strict",
       secure   : process.env.NODE_ENV === "production",
-      maxAge   : 7 * 24 * 60 * 60 * 1000        // 7 dni
+      maxAge   : 7 * 24 * 60 * 60 * 1000        
     });
 
     return res.json({ accessToken: access, user: { id: user.user_id, username: user.username, role: user.role } });
   } catch (err) { next(err); }
 });
 
-// *****  POST /api/auth/refresh –‑ wywoływane w tle  *****
+/**
+ * @openapi
+ * /auth/refresh:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Odświeża access-token (wymaga refresh-token w cookie)
+ *     responses:
+ *       200:
+ *         description: Nowy access-token
+ *       401: { $ref: '#/components/schemas/Error' }
+ *       404: { $ref: '#/components/schemas/Error' }
+ */
 authRouter.post("/refresh", async (req, res, next) => {
   try {
     const token = req.cookies.refreshToken;
@@ -143,7 +209,6 @@ authRouter.post("/refresh", async (req, res, next) => {
       username: user.username
     });
 
-    // Zwróć pełną strukturę użytkownika
     res.json({
       accessToken: access,
       user: {
@@ -158,7 +223,15 @@ authRouter.post("/refresh", async (req, res, next) => {
   }
 });
 
-// *****  POST /api/auth/logout  *****
+/**
+ * @openapi
+ * /auth/logout:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Wylogowanie (czyści ciasteczko refreshToken)
+ *     responses:
+ *       204: { description: Wylogowano, brak treści }
+ */
 authRouter.post("/logout", (_req, res) => {
   res.clearCookie("refreshToken", { httpOnly: true, sameSite: "strict" });
   res.status(204).end();

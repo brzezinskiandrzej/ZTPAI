@@ -1,6 +1,8 @@
 import { AppDataSource } from "../database/config/data-source";
 import { User }          from "../models/User";
 import { Playlist }      from "../models/Playlist";
+import { publishAdminEvent } from "../queues/publish";
+import { AdminLog }      from "../models/AdminLog";
 import AppError          from "../middlewares/AppError";
 import bcrypt            from "bcrypt";
 type SortField = "date" | "name" | "songs";
@@ -8,7 +10,7 @@ type SortDir   = "asc"  | "desc";
 const userRepo     = () => AppDataSource.getRepository(User);
 const playlistRepo = () => AppDataSource.getRepository(Playlist);
 
-/* ---------- USERS ---------- */
+
 export async function listUsers() {
   const repo = AppDataSource.getRepository(User);
 
@@ -23,7 +25,7 @@ export async function listUsers() {
       "u.is_banned          AS is_banned",
       "COUNT(p.playlist_id) AS playlistcount"
     ])
-    .groupBy("u.user_id")        // pozostałe pola są funkcjonalnie zależne
+    .groupBy("u.user_id")        
     .addGroupBy("u.username")
     .addGroupBy("u.email")
     .addGroupBy("u.created_at")
@@ -38,11 +40,16 @@ export async function listUsers() {
     is_banned     : !!r.is_banned
   }));
 }
-export async function banUser(id:number, ban:boolean) {
-  const user = await userRepo().findOneBy({ user_id:id });
+export async function banUser(adminId: number,targetUserId: number, ban:boolean) {
+  const user = await userRepo().findOneBy({ user_id:adminId });
   if (!user) throw new AppError(404,"admin/user-not-found","Użytkownik nie istnieje");
   user.is_banned = ban;
   await userRepo().save(user);
+  await publishAdminEvent(
+    user.user_id,
+    ban ? "BAN" : "UNBAN",
+    targetUserId
+  );
 }
 export async function resetPassword(id:number,newPass:string) {
   if (newPass.length<8) throw new AppError(422,"validation/weak-pass","Hasło za krótkie","password");
@@ -52,12 +59,12 @@ export async function resetPassword(id:number,newPass:string) {
   await userRepo().save(user);
 }
 
-/* ---------- PLAYLISTS ---------- */
+
 export async function getAllPlaylists(
   sort: SortField = "date",
   dir : SortDir   = "desc"
 ) {
-  /** walidacja parametrów */
+
   if (!["date","name","songs"].includes(sort))
     throw new AppError(400,"validation/invalid-sort","Sort must be date|name|songs","sort");
   if (!["asc","desc"].includes(dir))
@@ -65,7 +72,7 @@ export async function getAllPlaylists(
 
   const repo  = AppDataSource.getRepository(Playlist);
 
-  /*  ── zapytanie  ───────────────────────────────────────────── */
+
   const qb = AppDataSource.getRepository(Playlist)
     .createQueryBuilder("pl")
     .leftJoin("pl.owner", "o")
@@ -81,7 +88,7 @@ export async function getAllPlaylists(
     .addGroupBy("pl.created_at")   
     .addGroupBy("o.username");
 
-  /* sortowanie */
+
   const DIR = dir.toUpperCase() as "ASC" | "DESC";
 
   switch (sort) {
@@ -93,7 +100,7 @@ export async function getAllPlaylists(
 
   const rows = await qb.getRawMany();
 
-  /* mapowanie na DTO – frontend oczekuje dokładnie tych pól */
+ 
   return rows.map(r => ({
     id        : Number(r.id),
     name      : r.name,
@@ -105,4 +112,12 @@ export async function getAllPlaylists(
 export async function deletePlaylist(id:number) {
   const ok = await playlistRepo().delete({ playlist_id:id });
   if (!ok.affected) throw new AppError(404,"admin/playlist-not-found","Playlista nie istnieje");
+}
+
+export async function listLogs() {
+  return AppDataSource.getRepository(AdminLog).find({
+    relations: ["actor"],           
+    order: { id: "DESC" },         
+    take: 100                       
+  });
 }

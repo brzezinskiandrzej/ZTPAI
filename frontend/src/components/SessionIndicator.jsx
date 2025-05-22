@@ -7,7 +7,7 @@ export default function SessionIndicator() {
     const timeout = setTimeout(() => {
       if (user) console.log("✅ Sesja aktywna", user.username);
       else console.log("⛔ Brak sesji");
-    }, 500); // 500ms opóźnienia dla stabilizacji stanu
+    }, 500); 
 
     return () => clearTimeout(timeout);
   }, [user, token]);

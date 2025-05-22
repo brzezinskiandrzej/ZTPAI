@@ -5,9 +5,9 @@ export function useAdminApi() {
   const fetcher = useFetchWithAuth();
 
   return {
-    /* USERS */
+
     getUsers:        ()              => fetcher(`${API}/users`),
-    banUser:         (id,ban=true)        =>
+    banUser:         (id,ban)        =>
       fetcher(`${API}/users/${id}/ban`, {
         method :"PATCH",
         headers: {"Content-Type":"application/json"},
@@ -19,9 +19,11 @@ export function useAdminApi() {
         headers: {"Content-Type":"application/json"},
         body   : JSON.stringify({newPassword:newPass})
       }),
-    /* PLAYLISTS */
+ 
     getPlaylists:    (sort = "date", dir = "desc") =>
       fetcher(`${API}/playlists?sort=${sort}&dir=${dir}`),
-    deletePlaylist:  id              => fetcher(`${API}/playlists/${id}`,     {method:"DELETE"})
+    deletePlaylist:  id              => fetcher(`${API}/playlists/${id}`,     {method:"DELETE"}),
+    getLogs: () => fetcher(`${API}/logs`)
+
   };
 }

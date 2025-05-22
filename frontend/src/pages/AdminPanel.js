@@ -49,13 +49,14 @@ export default function AdminPanel() {
     try {
       setLoading(true); setError(null);
 
-      const [u, p] = await Promise.all([
+      const [u, p,l] = await Promise.all([
         api.getUsers(),
-        api.getPlaylists(sortBy, sortOrder)
+        api.getPlaylists(sortBy, sortOrder),
+        api.getLogs() 
       ]);
       setUsers(u);
       if (Array.isArray(sortInitial(p))) setPlaylists(sortInitial(p));
-      // logs zostają puste (AI w przyszłości)
+      setLogs(l);
     } catch (e) {
       setError(e.data?.error?.message || "Failed to load data");
     } finally { setLoading(false); }
@@ -90,12 +91,18 @@ export default function AdminPanel() {
   function showUserPlaylistCount(u) { setSelectedUser(u); setShowUserDetails(true); }
   function closeUserDetails()       { setSelectedUser(null); setShowUserDetails(false); }
 
-  async function banUser(id) {
+  async function banUser(id, currentlyBanned) {
     try {
-      await api.banUser(id);
-      setSuccess("User has been banned ✔");
-      await refreshUsers();
-    } catch (e) { setError(e.data?.error?.message || "Failed to ban user"); }
+      const resp = await api.banUser(id, !currentlyBanned);
+
+    setUsers(prev =>
+     prev.map(u =>
+       u.id === resp.userId ? { ...u, is_banned: resp.isBanned } : u));
+      if (selectedUser?.id === resp.userId)
+        setSelectedUser(u => ({ ...u, is_banned: resp.isBanned }));
+
+      setSuccess(resp.isBanned ? "User locked ✔" : "User unlocked ✔");
+    } catch (e) { setError(e.data?.error?.message || "Failed to change user status"); }
   }
 
   async function resetPassword(id) {
@@ -181,9 +188,9 @@ export default function AdminPanel() {
                       View Details
                     </button>
                     <button className="admin-ban-user-btn"
-                            disabled={u.is_banned}
-                            onClick={()=>banUser(u.id)}>
-                      {u.is_banned ? "Banned" : "Ban User"}
+                            disabled={false}
+                            onClick={()=>banUser(u.id, u.is_banned)}>
+                      {u.is_banned ? "Unlock" : "Ban User"}
                     </button>
                   </div>
                 </div>
@@ -299,12 +306,12 @@ export default function AdminPanel() {
                 Reset Password
               </button>
               <button className="admin-modal-ban-btn"
-                      disabled={selectedUser.is_banned}
+                      disabled={false}
                       onClick={()=>{
-                        banUser(selectedUser.id);
+                        banUser(selectedUser.id, selectedUser.is_banned);
                         closeUserDetails();
                       }}>
-                {selectedUser.is_banned ? "Banned" : "Ban User"}
+                {selectedUser.is_banned ? "Unlock" : "Ban User"}
               </button>
             </div>
           </div>

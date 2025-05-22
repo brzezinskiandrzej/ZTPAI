@@ -1,6 +1,6 @@
-// src/utils/errorMessages.js
+
 export const errorTranslations = {
-  // Logowanie
+
   'auth/user-not-found': {
     message: "Nie znaleziono konta z tym adresem email",
     field: "email"
@@ -10,7 +10,7 @@ export const errorTranslations = {
     field: "password"
   },
   
-  // Rejestracja
+
   'validation/missing-fields': {
     message: "Wszystkie pola są wymagane",
     field: "global"
@@ -28,7 +28,7 @@ export const errorTranslations = {
     field: "password"
   },
   
-  // Ogólne
+
   'network-error': {
     message: "Błąd połączenia z serwerem",
     field: "global"

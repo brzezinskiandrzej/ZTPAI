@@ -11,11 +11,9 @@ export let fixtures: {
 };
 
 beforeAll(async () => {
-  // 1. inicjalizacja
   await AppDataSource.initialize();
-  await AppDataSource.synchronize(true);   // czyści schemat testowy
+  await AppDataSource.synchronize(true);   
 
-  // 2. seed
   const userRepo = AppDataSource.getRepository(User);
   const songRepo = AppDataSource.getRepository(Song);
   const plRepo   = AppDataSource.getRepository(Playlist);
@@ -43,7 +41,7 @@ beforeAll(async () => {
     order_index: 1
   }));
 
-  fixtures = { user, song };          // ← udostępniamy testom
+  fixtures = { user, song };          
 });
 
 afterAll(async () => {

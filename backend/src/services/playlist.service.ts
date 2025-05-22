@@ -58,7 +58,7 @@ export async function incrementPlay(trackId: number) {
     song.play_count += 1;
     await songRepo.save(song);
   
-    return { playCount: song.play_count };   //  ← to właśnie test sprawdza
+    return { playCount: song.play_count };   
   }
   export async function toggleFavorite(
     userId: number,
@@ -81,7 +81,6 @@ export async function incrementPlay(trackId: number) {
       if (!exists) {
         await likeRepo.save(likeRepo.create({ user_id: userId, song_id: trackId }));
       }
-      /** ⬇⬇⬇ MUSI coś zwrócić */
       return { isFavorite: true };
     }
   
@@ -114,6 +113,6 @@ export async function getSavedPlaylists(ownerId:number){
       "userId"
     );
 
-  return rows;   // [{id,name,createdAt,tracks}]
+  return rows;  
 }
 
