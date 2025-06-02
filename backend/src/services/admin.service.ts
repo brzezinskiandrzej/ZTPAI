@@ -48,7 +48,7 @@ export async function banUser(adminId: number,targetUserId: number, ban:boolean)
   await publishAdminEvent(
     user.user_id,
     ban ? "BAN" : "UNBAN",
-    targetUserId
+    targetUserId, null
   );
 }
 export async function resetPassword(id:number,newPass:string) {
@@ -109,9 +109,24 @@ export async function getAllPlaylists(
     created   : r.created.toISOString().slice(0,10)
   }));
 }
-export async function deletePlaylist(id:number) {
+export async function deletePlaylist(id:number, actorId: number) {
+  const plRepo = AppDataSource.getRepository(Playlist);
+  const playlist = await plRepo.findOne({
+    where: { playlist_id: id },
+    select: ["playlist_id", "name"],       // do meta
+  });
+  if (!playlist)
+    throw new AppError(404,"admin/playlist-not-found","Playlista nie istnieje");
+
   const ok = await playlistRepo().delete({ playlist_id:id });
   if (!ok.affected) throw new AppError(404,"admin/playlist-not-found","Playlista nie istnieje");
+  await publishAdminEvent(
+    actorId,                 // kto
+    "DELETE_PLAYLIST",       // action
+    id,              // target
+    { playlistName: playlist.name }   // meta
+  );
+
 }
 
 export async function listLogs() {

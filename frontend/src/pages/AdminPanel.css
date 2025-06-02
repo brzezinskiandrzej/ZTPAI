@@ -350,6 +350,14 @@
   border-radius:6px;
   margin-bottom:12px;
 }
+.admin-logs-table{
+  width:100%; border-collapse:collapse; font-size:14px;
+}
+.admin-logs-table th, .admin-logs-table td{
+  border-bottom:1px solid #ddd; padding:6px 8px;
+}
+.admin-logs-table tbody tr:hover{ background:#fafafa; }
+
 
 /* Mobile Styles */
 .admin-mobile-users {

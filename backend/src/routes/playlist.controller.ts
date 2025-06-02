@@ -50,6 +50,52 @@ playlistRouter.get(
     } catch (e) { next(e); }
   }
 );
+
+/**
+ * @openapi
+ * /playlist/{userId}/liked:
+ *   get:
+ *     tags: [Playlist]
+ *     summary: Ulubione utwory użytkownika
+ *     security: [ { bearerAuth: [] } ]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:     { type: integer }
+ *                   title:  { type: string }
+ *                   artist: { type: string }
+ *                   artwork:{ type: string, nullable: true }
+ *       401: { $ref: '#/components/schemas/Error' }
+ *       403: { $ref: '#/components/schemas/Error' }
+ */
+playlistRouter.get(
+  "/playlist/:userId/liked",
+  requireAuth,
+  validateNumericId("userId"),
+  async (req: AuthReq, res, next) => {
+    try {
+      const ownerId = +req.params.userId;
+      if (req.user!.userId !== ownerId && req.user!.role !== "admin")
+        return res.status(403).json({ error: "Forbidden" });
+
+      const data = await srv.getLikedSongs(ownerId);
+      res.json(data);
+    } catch (e) { next(e); }
+  }
+);
+
 /**
  * @openapi
  * /playlist/{userId}/{playlistId}:
@@ -168,6 +214,8 @@ playlistRouter.post(
     }
   }
 );
+
+
 
 
 

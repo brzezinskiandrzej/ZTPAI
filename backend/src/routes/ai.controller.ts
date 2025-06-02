@@ -2,6 +2,7 @@ import { Router } from "express";
 import { analyseMood, MOODS } from "../services/ai.service";
 import { requireAuth } from "../middlewares/auth.middleware";
 import { generatePlaylistForMood } from "../services/playlist.generator";
+import { publishAdminEvent } from "../queues/publish";
 
 export const aiRouter = Router();
 
@@ -34,6 +35,12 @@ aiRouter.post("/mood", requireAuth, async (req, res, next) => {
 
     /* -------- 1) analiza nastroju -------- */
     const moodData = await analyseMood(text);          // { mood, valence, energy, … }
+    await publishAdminEvent(
+        req.user!.userId,          // actor
+        "AI_DETECTION",            // action
+        null,                      // targetId – brak
+        { prompt: text.trim(), mood: moodData.mood }   // meta
+    );
 
     /* -------- 2) walidacja nastroju -------- */
     if (!MOODS.includes(moodData.mood as any))

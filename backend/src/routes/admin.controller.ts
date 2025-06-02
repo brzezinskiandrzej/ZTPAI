@@ -164,7 +164,7 @@ adminRouter.get(
 adminRouter.delete("/playlists/:id",
   validateNumericId("id"),
   async (req,res,next)=>{ try{
-    await adminSrv.deletePlaylist(+req.params.id);
+    await adminSrv.deletePlaylist(req.user!.userId,+req.params.id);
     res.status(204).end();
   }catch(e){next(e);} });
 /**

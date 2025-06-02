@@ -28,6 +28,12 @@ export async function getUserPlaylist(userId: number,playlistId: number) {
     "Playlista nie znaleziona",
     "playlistId"
   );
+  const likedRepo = AppDataSource.getRepository(LikedSong);
+  const likedRows = await likedRepo.find({
+    where: { user_id: userId },
+    select: { song_id: true },
+  });
+  const likedSet = new Set(likedRows.map(l => l.song_id));
 
   const tracks = playlist.playlistSongs
     .sort((a, b) => a.order_index - b.order_index)
@@ -38,7 +44,7 @@ export async function getUserPlaylist(userId: number,playlistId: number) {
       artwork: ps.song.artwork_url,
       playCount: ps.song.play_count,
       duration: "",
-      isFavorite: false,
+      isFavorite: likedSet.has(ps.song.song_id),  
       url: ps.song.audio_url,
     }));
 
@@ -115,4 +121,34 @@ export async function getSavedPlaylists(ownerId:number){
 
   return rows;  
 }
+
+// na końcu pliku – nowa funkcja
+export async function getLikedSongs(userId: number) {
+  const userRepo  = AppDataSource.getRepository(User);
+  const likeRepo  = AppDataSource.getRepository(LikedSong);
+
+  const user = await userRepo.findOneBy({ user_id: userId });
+  if (!user)
+    throw new AppError(404,"playlist/user-not-found","Użytkownik nie istnieje","userId");
+
+  const rows = await likeRepo.find({
+    where     : { user_id: userId },
+    relations : ["song", "song.artist"],
+    order     : { created_at: "DESC" },
+  });
+
+  const tracks = rows.map(l => ({
+    id        : l.song.song_id,
+    title     : l.song.title,
+    artist    : l.song.artist?.name ?? "Unknown",
+    artwork   : l.song.artwork_url,
+    playCount : l.song.play_count,
+    duration  : "",
+    isFavorite: true,                 // ← wszystkie to ulubione
+    url       : l.song.audio_url,
+  }));
+
+  return { username: user.username, playlistName: "Liked songs", tracks };
+}
+
 

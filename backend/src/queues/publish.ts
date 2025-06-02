@@ -10,22 +10,11 @@ const EXCHANGE = "admin.events";
  */
 export async function publishAdminEvent(
   actorId: number,
-  action: "BAN" | "UNBAN" | string,
-  targetId: number
-): Promise<void> {
+  action:  string,
+  targetId: number | null = null,
+  meta:    Record<string, any> | null = null
+){
   const ch = await initAmqp();
-
-  const payload = {
-    actorId,
-    action,
-    targetId,
-    ts: Date.now()
-  };
-
-  ch.publish(
-    EXCHANGE,
-    "",                                      
-    Buffer.from(JSON.stringify(payload)),      
-    { persistent: true }
-  );
+  const payload = JSON.stringify({ actorId, action, targetId, meta });
+  ch.publish("admin.events", "", Buffer.from(payload), { persistent: true });
 }

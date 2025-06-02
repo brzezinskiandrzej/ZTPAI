@@ -126,6 +126,23 @@ export default function AdminPanel() {
     try { setUsers(await api.getUsers()); }
     catch (e) { setError(e.data?.error?.message || "Failed to reload users"); }
   }
+  function renderDescription(log){
+    switch (log.action){
+      case "BAN":    return `User #${log.target_id} was banned`;
+      case "UNBAN":  return `User #${log.target_id} was un-banned`;
+      case "DELETE_PLAYLIST":
+        return `Playlist #${log.target_id} was deleted (${log.meta?.playlistName})`;
+      case "AI_DETECTION":
+        return (
+          <>
+            Prompt: <i>{log.meta?.prompt.slice(0,60)}…</i><br/>
+            Detected mood:&nbsp;<b>{log.meta?.mood}</b>
+          </>
+        );
+      default:       return JSON.stringify(log.meta ?? {});
+    }
+  }
+
 
 
   /* ---------- UI handlers ---------- */
@@ -253,21 +270,33 @@ export default function AdminPanel() {
         {activeTab==="logs" && (
           <div className="admin-content">
             <h2 className="admin-section-title">System Logs</h2>
-            {logs.length===0
-              ? <p style={{color:"#999"}}>Logs will appear here…</p>
-              : <div className="admin-logs-list">
+
+            {logs.length === 0 ? (
+              <p style={{color:"#999"}}>No logs yet…</p>
+            ) : (
+              <table className="admin-logs-table">
+                <thead>
+                  <tr>
+                    <th style={{width:"140px"}}>Timestamp</th>
+                    <th style={{width:"110px"}}>Action</th>
+                    <th>Description</th>
+                    <th style={{width:"150px"}}>Actor</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {logs.map(l=>(
-                    <div key={l.id} className="admin-log-entry">
-                      <div className="admin-log-timestamp">{l.timestamp}</div>
-                      <div className="admin-log-mood">
-                        <span className="admin-log-label">Mood:</span> {l.mood}
-                      </div>
-                      <div className="admin-log-detection">
-                        <span className="admin-log-label">AI&nbsp;Detection:</span> {l.aiDetection}
-                      </div>
-                    </div>
+                    <tr key={l.id}>
+                      <td>{new Date(l.created_at).toLocaleString()}</td>
+                      <td>{l.action}</td>
+                      <td>
+                        {renderDescription(l)}
+                      </td>
+                      <td>{l.actor ? l.actor.username : "—"}</td>
+                    </tr>
                   ))}
-                </div>}
+                </tbody>
+              </table>
+            )}
           </div>
         )}
       </>

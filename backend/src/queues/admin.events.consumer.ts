@@ -14,13 +14,14 @@ export async function startAdminConsumer() {
     if (!msg) return;
 
     try {
-      const { actorId, action, targetId } = JSON.parse(msg.content.toString());
+      const { actorId, action, targetId, meta  } = JSON.parse(msg.content.toString());
 
       await AppDataSource.getRepository(AdminLog).save(
         AppDataSource.getRepository(AdminLog).create({
           actor   : { user_id: actorId } as any,
           action,
-          targetId
+          targetId : targetId,
+          meta
         })
       );
 

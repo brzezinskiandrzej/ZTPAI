@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
 import { User } from "./User";
 
 @Entity("admin_logs")
@@ -6,14 +6,18 @@ export class AdminLog {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => User, { nullable: false })
-  actor!: User;                
+  @ManyToOne(() => User, { eager: true, onDelete: "SET NULL" })
+  @JoinColumn({ name: "actor_id" })
+  actor!: User | null;                
 
-  @Column()
+  @Column({ length: 32 })
   action!: string;             
 
   @Column({ type: "int", nullable: true })
-  targetId!: number | null;   
+  targetId!: number | null;  
+  
+  @Column({ type: "jsonb", nullable: true })
+  meta!: Record<string, any> | null;
 
   @CreateDateColumn()
   created_at!: Date;

@@ -175,7 +175,7 @@ function MyAccount() {
 
           {/* --------- akcje (na razie linki „martwe”) --------- */}
           <div className="account-actions">
-            <a href="#likes"  className="action-link" onClick={e=>{e.preventDefault(); navigate(`/playlist/liked`);}}>Liked</a>
+            <a href="#likes"  className="action-link" onClick={e=>{e.preventDefault(); navigate(`/playlist/${user.id}/liked`);}}>Liked</a>
             <button className="action-link" onClick={toggleSaved}>
               Saved Playlists
             </button>

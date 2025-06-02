@@ -17,7 +17,10 @@ export function usePlaylistApi() {
     });
     
   };
-  return { fetchUserPlaylist, updatePlayCount, toggleFavorite };
+  const fetchLikedPlaylist = (uid) =>
+    fetcher(`/api/playlist/${uid}/liked`, { method: "GET" });
+
+  return { fetchUserPlaylist, updatePlayCount, toggleFavorite, fetchLikedPlaylist };
 };
   
 

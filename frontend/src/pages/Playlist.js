@@ -17,11 +17,14 @@ function Playlist() {
   const { userId, playlistId } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { fetchUserPlaylist, updatePlayCount, toggleFavorite } = usePlaylistApi();
+  const { fetchUserPlaylist, updatePlayCount, toggleFavorite, fetchLikedPlaylist } = usePlaylistApi();
   const loadPlaylist = async () => {
     try {
       setLoading(true);
-      const data = await fetchUserPlaylist(userId,playlistId);
+      const data =
+      playlistId === "liked"
+        ? await fetchLikedPlaylist(userId)
+        : await fetchUserPlaylist(userId, playlistId);
       setPlaylist(data);
       setLoading(false);
     } catch (err) {

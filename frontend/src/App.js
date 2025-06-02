@@ -31,6 +31,8 @@ function App() {
             <Route element={<RequireRole role="admin" />}>
               <Route path="/admin" element={<AdminPanel />} />
             </Route>
+            <Route path="/playlist/:userId/:playlistId" element={<Playlist />} />
+
             
           </Route>
 
