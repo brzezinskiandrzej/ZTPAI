@@ -7,7 +7,7 @@ import AppError from "../middlewares/AppError";
 import { Song } from "../models/Song";
 import { LikedSong } from "../models/LikedSong";
 
-export async function getUserPlaylist(userId: number) {
+export async function getUserPlaylist(userId: number,playlistId: number) {
   const userRepo = AppDataSource.getRepository(User);
   const user = await userRepo.findOneBy({ user_id: userId });
   if (!user) throw new AppError(
@@ -19,7 +19,7 @@ export async function getUserPlaylist(userId: number) {
 
   const playlistRepo = AppDataSource.getRepository(Playlist);
   const playlist = await playlistRepo.findOne({
-    where: { owner: { user_id: userId } },
+    where: { playlist_id: playlistId, owner: { user_id: userId } },
     relations: ["playlistSongs", "playlistSongs.song", "playlistSongs.song.artist"],
   });
   if (!playlist) throw new AppError(

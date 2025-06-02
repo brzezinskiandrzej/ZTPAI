@@ -25,37 +25,12 @@ import { toggleFavorite } from "../services/playlist.service";
 export const playlistRouter = Router();
 
 /**
- * @swagger
- * /api/playlist/{userId}:
- *   get:
- *     summary: Get user playlist
- *     parameters:
- *       - in: path
- *         name: userId
- *         schema: { type: integer }
- *     responses:
- *       200: { description: Success }
- *       400: { description: Bad Request }
- *       404: { description: Not Found }
- */
-playlistRouter.get(
-  "/playlist/mine",
-  requireAuth,
-  async (req:AuthReq, res, next) => {
-    try {
-      const data = await srv.getSavedPlaylists(req.user!.userId);
-      res.json(data);                        
-    } catch (e) { next(e); }
-  }
-);
-/**
  * @openapi
  * /playlist/{userId}:
  *   get:
  *     tags: [Playlist]
- *     summary: Pełna play-lista użytkownika
- *     security:
- *       - bearerAuth: []
+ *     summary: Zwraca listę playlist użytkownika
+ *     security: [ { bearerAuth: [] } ]
  *     parameters:
  *       - in: path
  *         name: userId
@@ -64,26 +39,56 @@ playlistRouter.get(
  *     responses:
  *       200: { description: OK }
  *       403: { $ref: '#/components/schemas/Error' }
+ */
+playlistRouter.get(
+  "/playlist/mine",
+  requireAuth,
+  async (req: AuthReq, res, next) => {
+    try {
+      const data = await srv.getSavedPlaylists(req.user!.userId);
+      res.json(data);
+    } catch (e) { next(e); }
+  }
+);
+/**
+ * @openapi
+ * /playlist/{userId}/{playlistId}:
+ *   get:
+ *     tags: [Playlist]
+ *     summary: Zwraca jedną, konkretną playlistę
+ *     security: [ { bearerAuth: [] } ]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema: { type: integer }
+ *       - in: path
+ *         name: playlistId
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200: { description: OK }
+ *       403: { $ref: '#/components/schemas/Error' }
  *       404: { $ref: '#/components/schemas/Error' }
  */
 playlistRouter.get(
-  "/playlist/:userId",
+  "/playlist/:userId/:playlistId",
   requireAuth,
   validateNumericId("userId"),
+  validateNumericId("playlistId"),
   async (req: AuthReq, res, next) => {
     try {
-      const requested = Number(req.params.userId);
-      if (req.user!.userId !== requested && req.user!.role !== "admin")
+      const ownerId    = +req.params.userId;
+      const playlistId = +req.params.playlistId;
+
+      if (req.user!.userId !== ownerId && req.user!.role !== "admin")
         return res.status(403).json({ error: "Forbidden" });
 
-      const data = await srv.getUserPlaylist(requested)
+      const data = await srv.getUserPlaylist(ownerId, playlistId);
       res.json(data);
-    } catch (e) {
-      next(e);
-    }
+    } catch (e) { next(e); }
   }
 );
-
 /**
  * @openapi
  * /tracks/{trackId}/play:

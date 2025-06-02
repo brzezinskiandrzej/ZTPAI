@@ -21,9 +21,12 @@ services:
       ACCESS_TOKEN_SECRET:  "leTK82maWBeXH7hO6lw"
       REFRESH_TOKEN_SECRET: "iEDAw1YbJroBaBt8D9R"
       RABBIT_URL: "amqp://rabbit:5672"
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_MODEL:  ${OPENAI_MODEL:-gpt-3.5-turbo-1106}
 
     depends_on:
       - db
+      - rabbit
     networks:
       - app-network
 

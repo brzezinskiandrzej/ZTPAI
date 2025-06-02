@@ -26,7 +26,7 @@ function App() {
           
           <Route path="/login" element={<LoginRegistration />} />
           <Route element={<PrivateRoute />}>
-            <Route path="/playlist/:userId" element={<Playlist />} />
+            <Route path="/playlist/:userId/:playlistId" element={<Playlist />} />
             <Route path="/account" element={<MyAccount />} />
             <Route element={<RequireRole role="admin" />}>
               <Route path="/admin" element={<AdminPanel />} />

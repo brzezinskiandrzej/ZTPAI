@@ -10,6 +10,7 @@ import cookieParser from 'cookie-parser';
 import { authRouter } from './routes/auth.controller';
 import { accountRouter } from "./routes/account.controller";
 import { adminRouter } from "./routes/admin.controller";
+import { aiRouter } from "./routes/ai.controller";
 import "dotenv/config";
 
 
@@ -20,6 +21,7 @@ app.use("/api", playlistRouter);
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/account", accountRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/ai", aiRouter);
 app.use(errorHandler);
 app.use(cors({
   origin: "http://localhost:3000", 

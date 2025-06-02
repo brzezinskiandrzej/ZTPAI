@@ -3,8 +3,8 @@ const API_BASE_URL = "/api";
 
 export function usePlaylistApi() {
   const fetcher = useFetchWithAuth();
-  const fetchUserPlaylist = async (userId) => {
-    return fetcher(`${API_BASE_URL}/playlist/${userId}`, { method: "GET" });
+  const fetchUserPlaylist = async (userId, playlistId) => {
+    return fetcher(`${API_BASE_URL}/playlist/${userId}/${playlistId}`, { method: "GET" });
   };
   const updatePlayCount = async (trackId) => {
     await fetcher(`${API_BASE_URL}/tracks/${trackId}/play`, { method: "POST" });

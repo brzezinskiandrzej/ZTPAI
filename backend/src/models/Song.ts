@@ -31,4 +31,19 @@ export class Song {
     
     @Column({ nullable: true })
     audio_url?: string;
+
+    @Column("float", { default: 0.5 })
+    valence!: number;
+
+    @Column("float", { default: 0.5 })
+    energy!: number;
+
+    @Column("int", { default: 120 })
+    tempo!: number;
+
+    @Column({ length: 4, default: "C" })
+    musical_key!: string;
+
+    @Column({ type: "varchar", length: 120 })
+    genres!: string; 
   }
