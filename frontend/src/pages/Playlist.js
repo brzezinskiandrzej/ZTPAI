@@ -14,14 +14,14 @@ function Playlist() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentSong, setCurrentSong] = useState(null);
-  const { userId } = useParams();
+  const { userId, playlistId } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { fetchUserPlaylist, updatePlayCount, toggleFavorite } = usePlaylistApi();
   const loadPlaylist = async () => {
     try {
       setLoading(true);
-      const data = await fetchUserPlaylist(userId);
+      const data = await fetchUserPlaylist(userId,playlistId);
       setPlaylist(data);
       setLoading(false);
     } catch (err) {
@@ -31,8 +31,8 @@ function Playlist() {
   };
 
   useEffect(() => {
-    if (user && user.id !== +userId) {
-      navigate(`/playlist/${user.id}`, { replace: true });
+    if (user && user.id !== +userId && user.role !== "admin" && playlist) {
+      navigate(`/playlist/${user.id}/${playlist.id}`, { replace: true });
       return;
     }
     loadPlaylist();
@@ -108,7 +108,7 @@ function Playlist() {
           <div className="nav-item mood-check" onClick={refreshPlaylist}>Mood Check</div>
           <div className="nav-item">Saved</div>
         </nav>
-        <div className="user-avatar"></div>
+        <div className="user-avatar" onClick={() => navigate("/account")}></div>
       </header>
 
       <div className="playlist-box">

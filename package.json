@@ -12,11 +12,14 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.7.2",
     "jwt-decode": "^4.0.0",
+    "openai": "^5.0.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
-    "typeorm": "^0.3.21"
+    "typeorm": "^0.3.21",
+    "zod": "^3.25.46"
   },
   "devDependencies": {
-    "@types/swagger-jsdoc": "^6.0.4"
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8"
   }
 }

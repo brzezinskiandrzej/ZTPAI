@@ -46,7 +46,6 @@ describe('Playlist endpoints', () => {
     });
 
     it("dodaje i usuwa polubienie", async () => {
-        // ➕ dodajemy
         await request(app)
           .post(`/api/tracks/${fixtures.song.song_id}/favorite?userId=${fixtures.user.user_id}`)
           .send({ isFavorite: true })
@@ -60,7 +59,6 @@ describe('Playlist endpoints', () => {
           })
         ).not.toBeNull();
     
-        // ➖ usuwamy
         await request(app)
           .post(`/api/tracks/${fixtures.song.song_id}/favorite?userId=${fixtures.user.user_id}`)
           .send({ isFavorite: false })

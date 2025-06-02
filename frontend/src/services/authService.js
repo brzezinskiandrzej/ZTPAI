@@ -53,7 +53,6 @@ export async function login(data) {
     return responseData;             
   }catch (error) {
     if (!error.isApiError) {
-      // Błąd sieciowy
       throw {
         status: 500,
         data: { error: { code: "network-error", message: "Błąd połączenia" } }

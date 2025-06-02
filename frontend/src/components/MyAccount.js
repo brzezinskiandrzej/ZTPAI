@@ -17,6 +17,7 @@ function MyAccount() {
   const [savedFetched, setSavedFetched] = useState(false);
   const [likes,    setLikes   ] = useState([]);  
   const [saved,    setSaved   ] = useState([]);   
+  const [savedErr, setSavedErr] = useState(null);
   const [isSettingsOpen,setIsSettingsOpen] = useState(false);
 
   /* ---------- init ---------- */
@@ -49,9 +50,13 @@ function MyAccount() {
   const toggleSettings = ()=> setIsSettingsOpen(o=>!o);
   const toggleSaved = async () => {
     if (!showSaved && !savedFetched) {
+      try {
       const list = await api.getSavedPlaylists();
       setSaved(list);
       setSavedFetched(true);
+      }catch (e) {
+        setSavedErr(e.data?.error?.message || "Nie udało się pobrać playlist");
+      }
     }
       
 
@@ -174,11 +179,17 @@ function MyAccount() {
             <button className="action-link" onClick={toggleSaved}>
               Saved Playlists
             </button>
-            {showSaved && saved.length === 0 && (
-              <p style={{color:"#e5a853",textAlign:"center"}}>Brak zapisanych playlist</p>
-            )}
+            
 
           </div>
+          {showSaved && saved.length === 0 && (
+              <p id="savedInfo"style={{color:"#e5a853",textAlign:"center"}}>Brak zapisanych playlist</p>
+            )}
+            {savedErr && (
+              <div className="error-box">
+                {savedErr}
+              </div>
+            )}
           {showSaved && saved.length > 0 && (
             <table className="saved-table">
               <thead><tr><th>Name</th><th>Tracks</th><th>Open</th></tr></thead>

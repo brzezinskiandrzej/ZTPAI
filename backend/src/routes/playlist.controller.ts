@@ -15,7 +15,7 @@ const router = express.Router();
 
 
 
-// src/routes/playlist.controller.ts
+
 import { Router } from "express";
 import { validateNumericId } from "../middlewares/validateId";
 import * as srv from "../services/playlist.service";
@@ -25,48 +25,87 @@ import { toggleFavorite } from "../services/playlist.service";
 export const playlistRouter = Router();
 
 /**
- * @swagger
- * /api/playlist/{userId}:
+ * @openapi
+ * /playlist/{userId}:
  *   get:
- *     summary: Get user playlist
+ *     tags: [Playlist]
+ *     summary: Zwraca listę playlist użytkownika
+ *     security: [ { bearerAuth: [] } ]
  *     parameters:
  *       - in: path
  *         name: userId
+ *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Success }
- *       400: { description: Bad Request }
- *       404: { description: Not Found }
+ *       200: { description: OK }
+ *       403: { $ref: '#/components/schemas/Error' }
  */
 playlistRouter.get(
   "/playlist/mine",
   requireAuth,
-  async (req:AuthReq, res, next) => {
+  async (req: AuthReq, res, next) => {
     try {
       const data = await srv.getSavedPlaylists(req.user!.userId);
-      res.json(data);                        
+      res.json(data);
     } catch (e) { next(e); }
   }
 );
+/**
+ * @openapi
+ * /playlist/{userId}/{playlistId}:
+ *   get:
+ *     tags: [Playlist]
+ *     summary: Zwraca jedną, konkretną playlistę
+ *     security: [ { bearerAuth: [] } ]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema: { type: integer }
+ *       - in: path
+ *         name: playlistId
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200: { description: OK }
+ *       403: { $ref: '#/components/schemas/Error' }
+ *       404: { $ref: '#/components/schemas/Error' }
+ */
 playlistRouter.get(
-  "/playlist/:userId",
+  "/playlist/:userId/:playlistId",
   requireAuth,
   validateNumericId("userId"),
+  validateNumericId("playlistId"),
   async (req: AuthReq, res, next) => {
     try {
-      const requested = Number(req.params.userId);
-      if (req.user!.userId !== requested && req.user!.role !== "admin")
+      const ownerId    = +req.params.userId;
+      const playlistId = +req.params.playlistId;
+
+      if (req.user!.userId !== ownerId && req.user!.role !== "admin")
         return res.status(403).json({ error: "Forbidden" });
 
-      const data = await srv.getUserPlaylist(requested)
+      const data = await srv.getUserPlaylist(ownerId, playlistId);
       res.json(data);
-    } catch (e) {
-      next(e);
-    }
+    } catch (e) { next(e); }
   }
 );
-
-// analogicznie POST /tracks/:id/play  & /tracks/:id/favorite
+/**
+ * @openapi
+ * /tracks/{trackId}/play:
+ *   post:
+ *     tags: [Playlist]
+ *     summary: Inkrementuje licznik odtworzeń utworu
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: trackId
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200: { description: OK }
+ *       401: { $ref: '#/components/schemas/Error' }
+ */
 playlistRouter.post(
   "/tracks/:trackId/play",
   requireAuth,
@@ -80,6 +119,34 @@ playlistRouter.post(
     }
   }
 );
+/**
+ * @openapi
+ * /tracks/{trackId}/favorite:
+ *   post:
+ *     tags: [Playlist]
+ *     summary: Dodaje/usuwa ulubione
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: trackId
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [isFavorite]
+ *             properties:
+ *               isFavorite: { type: boolean }
+ *     responses:
+ *       201: { description: Dodano do ulubionych }
+ *       200: { description: Usunięto z ulubionych }
+ *       401: { $ref: '#/components/schemas/Error' }
+ *       422: { $ref: '#/components/schemas/Error' }
+ */
 playlistRouter.post(
   "/tracks/:trackId/favorite",
   requireAuth,

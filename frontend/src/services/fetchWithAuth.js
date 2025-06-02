@@ -15,7 +15,11 @@ export function useFetchWithAuth() {
         credentials: "include"
       });
 
-      const data = await response.json();
+      let data = null;
+      if (response.status !== 204 && response.status !== 205) {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : null;
+      }
       
       if (!response.ok) {
         throw {

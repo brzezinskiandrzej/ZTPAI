@@ -1,4 +1,4 @@
-// backend/src/types/express/index.d.ts
+
 import { User } from "../../models/User";
 
 declare global {

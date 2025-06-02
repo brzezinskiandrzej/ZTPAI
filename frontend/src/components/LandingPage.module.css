@@ -86,7 +86,13 @@
 .rotateUp {
   transform: rotate(-45deg) translate(6px, -6px);
 }
-
+.adminItem{
+  background-color:#e5a853; 
+  color:#1a1f2e;
+  padding:8px 16px;
+  border-radius:6px;
+  font-weight:600;
+}
 /* Hero Section */
 .heroSection {
   flex: 1;
@@ -516,6 +522,7 @@
   padding: 32px;
   display: flex;
   flex-direction: column;
+  color:black;
 }
 
 .contactHeader {

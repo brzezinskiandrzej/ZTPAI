@@ -20,7 +20,10 @@ export class User {
     role!: string;   // 'user' | 'admin' | 'artist'
   
     @Column({ nullable: true })
-    avatar_url?: string; // pole na link do zdjęcia konta
+    avatar_url?: string; 
+    
+    @Column({ default: false })
+    is_banned!: boolean;
   
     @CreateDateColumn()
     created_at!: Date;

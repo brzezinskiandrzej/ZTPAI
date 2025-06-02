@@ -7,7 +7,7 @@ import AppError from "../middlewares/AppError";
 import { Song } from "../models/Song";
 import { LikedSong } from "../models/LikedSong";
 
-export async function getUserPlaylist(userId: number) {
+export async function getUserPlaylist(userId: number,playlistId: number) {
   const userRepo = AppDataSource.getRepository(User);
   const user = await userRepo.findOneBy({ user_id: userId });
   if (!user) throw new AppError(
@@ -19,7 +19,7 @@ export async function getUserPlaylist(userId: number) {
 
   const playlistRepo = AppDataSource.getRepository(Playlist);
   const playlist = await playlistRepo.findOne({
-    where: { owner: { user_id: userId } },
+    where: { playlist_id: playlistId, owner: { user_id: userId } },
     relations: ["playlistSongs", "playlistSongs.song", "playlistSongs.song.artist"],
   });
   if (!playlist) throw new AppError(
@@ -58,7 +58,7 @@ export async function incrementPlay(trackId: number) {
     song.play_count += 1;
     await songRepo.save(song);
   
-    return { playCount: song.play_count };   //  ← to właśnie test sprawdza
+    return { playCount: song.play_count };   
   }
   export async function toggleFavorite(
     userId: number,
@@ -81,7 +81,6 @@ export async function incrementPlay(trackId: number) {
       if (!exists) {
         await likeRepo.save(likeRepo.create({ user_id: userId, song_id: trackId }));
       }
-      /** ⬇⬇⬇ MUSI coś zwrócić */
       return { isFavorite: true };
     }
   
@@ -114,6 +113,6 @@ export async function getSavedPlaylists(ownerId:number){
       "userId"
     );
 
-  return rows;   // [{id,name,createdAt,tracks}]
+  return rows;  
 }
 

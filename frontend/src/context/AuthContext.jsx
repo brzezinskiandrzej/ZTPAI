@@ -6,7 +6,7 @@ const AuthCtx   = createContext(null);
 export const useAuth = () => useContext(AuthCtx);
 
 const LS_TOKEN  = "MM_ACCESS";
-const LS_USER   = "MM_USER";        // <- przechowujemy również uproszczony user
+const LS_USER   = "MM_USER";       
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem(LS_TOKEN));
@@ -39,11 +39,11 @@ export function AuthProvider({ children }) {
     localStorage.removeItem(LS_TOKEN);
     return null;
   });
-  const [loading, setLoading] = useState(!!token && !user);   // jeden render później
+  const [loading, setLoading] = useState(!!token && !user);  
 
-  /** helper zapisujący oba pola + localStorage */
+
   const setAuth = (u, t) => {
-    // Walidacja pełnej struktury
+    
     if (u && (!u.id || !u.username || !u.role)) {
       console.error("Nieprawidłowa struktura użytkownika:", u);
       localStorage.removeItem(LS_USER);
@@ -62,7 +62,7 @@ export function AuthProvider({ children }) {
     setUser(u);
     setToken(t);
   };
-  /* ⇨ Jednorazowa próba „ożywienia” sesji z refresh-cookie  */
+ 
   useEffect(() => {
     (async () => {
       if (!token) {
@@ -70,7 +70,7 @@ export function AuthProvider({ children }) {
         return;
       }
       try {
-        const data = await api.refresh();        // POST /refresh
+        const data = await api.refresh();       
         if (data?.accessToken) setAuth(data.user, data.accessToken);
       } catch (error) {
         console.error("Refresh error:", error);
@@ -78,9 +78,9 @@ export function AuthProvider({ children }) {
         setLoading(false);
       }
     })();
-  }, []);                                        // pierwszy render
+  }, []);                                     
 
-  /* ⇨ auto-refresh co 4,5 minuty */
+
   useEffect(() => {
     if (!token) return;
     const id = setInterval(async () => {
@@ -90,7 +90,7 @@ export function AuthProvider({ children }) {
     return () => clearInterval(id);
   }, [token]);
   useEffect(() => {
-    // Usuń niekompletne dane przy pierwszym ładowaniu
+   
     const storedUser = localStorage.getItem(LS_USER);
     if (storedUser) {
       try {
@@ -106,7 +106,6 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  /* ---------- akcje ---------- */
   const signin = async (email, password) => {
     
       const data = await api.login({ email, password });

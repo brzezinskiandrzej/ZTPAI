@@ -1,13 +1,19 @@
 // src/components/LandingPage.jsx
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import { Link } from "react-router-dom";
 import styles from "./LandingPage.module.css";
+import { useAuth }        from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeAccordion, setActiveAccordion] = useState(-1);
   const navigate = useNavigate();
+  const { user }     = useAuth(); 
+  const location = useLocation(); 
+
+  
 
   const accordionItems = [
     {
@@ -41,6 +47,16 @@ function LandingPage() {
 
   const toggleAccordion = (idx) =>
     setActiveAccordion(activeAccordion === idx ? -1 : idx);
+  const scrollTo = (id) =>
+    id === "home"
+      ? window.scrollTo({ top: 0, behavior: "smooth" })
+      : document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace("#", "");
+      setTimeout(() => scrollTo(id), 0);
+    }
+  }, [location.hash]);
 
   return (
     <div className={styles.landingPage}>
@@ -74,10 +90,18 @@ function LandingPage() {
               isMenuOpen ? styles.menuOpen : ""
             }`}
           >
-            <div className={styles.navItem}>Home</div>
-            <div className={styles.navItem}>Features</div>
-            <div className={styles.navItem}>How It Works</div>
-            <div className={styles.navItem}>Contact</div>
+            <div className={styles.navItem} onClick={() => scrollTo("home")}>Home</div>
+            <div className={styles.navItem} onClick={() => scrollTo("features")}>Features</div>
+            <div className={styles.navItem} onClick={() => scrollTo("how")}>How It Works</div>
+            <div className={styles.navItem} onClick={() => scrollTo("contact")}>Contact</div>
+            {user?.role === "admin" && (
+              <div
+                className={`${styles.navItem} ${styles.adminItem}`}
+                onClick={() => navigate("/admin")}
+              >
+                Admin panel
+              </div>
+            )}
           </nav>
 
           <button
@@ -105,11 +129,21 @@ function LandingPage() {
             </div>
           </button>
 
-          <div className={styles.ctaButton}>Get Started</div>
+          {user ? (
+            
+            <div className={styles.ctaButton} onClick={() => navigate("/account")}>
+              {user.username}
+            </div>
+          ) : (
+            
+            <div className={styles.ctaButton} onClick={() => navigate("/login")}>
+              Get&nbsp;Started
+            </div>
+          )}
         </header>
 
         {/* ---------------- HERO ---------------- */}
-        <section className={styles.heroSection}>
+        <section id="home" className={styles.heroSection}>
           <div className={styles.heroOverlay} />
           <div className={styles.heroContent}>
             <div className={styles.heroTagline}>Feel the Beat</div>
@@ -127,7 +161,7 @@ function LandingPage() {
         </section>
 
         {/* ---------------- PLAYLISTS ---------------- */}
-        <section className={styles.playlistsSection}>
+        <section id="features" className={styles.playlistsSection}>
           <div className={styles.playlistsContainer}>
             <div className={styles.playlistsContent}>
               <h2 className={styles.playlistsTitle}>
@@ -162,7 +196,7 @@ function LandingPage() {
         </section>
 
         {/* ---------------- HOW IT WORKS ---------------- */}
-        <section className={styles.howSection}>
+        <section id="how" className={styles.howSection}>
           <div className={styles.howBackground} />
           <div className={styles.howContainer}>
             <div className={styles.howContent}>
@@ -270,7 +304,7 @@ function LandingPage() {
       </div>
 
       {/* ---------------- CONTACT ---------------- */}
-      <section className={styles.contactSection}>
+      <section id="contact" className={styles.contactSection}>
         <div className={styles.contactContainer}>
           {/* FORM */}
           <div className={styles.contactFormContainer}>
@@ -313,7 +347,7 @@ function LandingPage() {
             <ul className={styles.contactList}>
               <li className={styles.contactItem}>
                 <i className={`ti ti-phone ${styles.contactItemIcon}`} />
-                <span>+1 (555) 123‑4567</span>
+                <span>+48 (123) 456‑4567</span>
               </li>
               <li className={styles.contactItem}>
                 <i className={`ti ti-mail ${styles.contactItemIcon}`} />

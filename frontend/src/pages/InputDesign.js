@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate  } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; 
 import styles from "./InputDesign.module.css";
 
 function InputDesign() {
@@ -8,6 +9,7 @@ function InputDesign() {
   const [touchEnd, setTouchEnd] = useState(0);
   const navigate = useNavigate();
   const [isDragging, setIsDragging] = useState(false);
+  const { token } = useAuth();
   const [items] = useState([
     {
       id: "emotions",
@@ -42,8 +44,11 @@ function InputDesign() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [status,     setStatus]     = useState("Ready to submit!");
+  const [success,    setSuccess]    = useState(false);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(true);
+  const [input,    setInput]    = useState("");
 
   useEffect(() => {
     // Update scroll buttons state
@@ -86,11 +91,41 @@ function InputDesign() {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!inputValue.trim() || submitted) return;
     setSubmitted(true);
-    setInputValue("");
-    setTimeout(() => setSubmitted(false), 3000);
+    setStatus("AI is thinking…");
+
+    try {
+      const res = await fetch("/api/ai/mood", {
+        method : "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization : `Bearer ${token}`,
+        },
+        body: JSON.stringify({ text: inputValue }),
+      });
+
+    
+
+      const payload = await res.json();
+      if (!res.ok) {
+        console.error("AI error:", payload);
+        setStatus(payload.error?.message || "AI error – try again!");
+        return;
+      }
+      
+        setStatus(`Your today's mood: ${payload.mood}`);
+        setSuccess(true); 
+        setTimeout(() => navigate(`/playlist/${payload.userId}/${payload.playlistId}`), 1500);
+      
+    } catch (err) {
+      console.error(err);
+      setStatus("Network error");
+    } finally {
+      setSubmitted(false);
+      setInput("");
+    }
   }
 
   function adjustHeight() {
@@ -127,10 +162,10 @@ function InputDesign() {
           />
         </div>
         <nav className={styles.navMenu}>
-          <div className={styles.navItem}><Link to="/">Home</Link></div>
-          <div className={styles.navItem}>Features</div>
-          <div className={styles.navItem}>How It Works</div>
-          <div className={styles.navItem}>Contact</div>
+          <div className={styles.navItem} onClick={() => navigate("/#home")} >Home</div>
+          <div className={styles.navItem} onClick={() => navigate("/#features")}>Features</div>
+          <div className={styles.navItem} onClick={() => navigate("/#how")}>How It Works</div>
+          <div className={styles.navItem} onClick={() => navigate("/#contact")}>Contact</div>
         </nav>
         <button
           className={styles.menuToggle}
@@ -166,9 +201,9 @@ function InputDesign() {
         >
           <div className={styles.mobileMenuContent}>
             <div className={styles.mobileNavItem}>Home</div>
-            <div className={styles.mobileNavItem}>Features</div>
-            <div className={styles.mobileNavItem}>How It Works</div>
-            <div className={styles.mobileNavItem}>Contact</div>
+            <div className={styles.mobileNavItem} onClick={() => {navigate("/#features"); setIsMobileMenuOpen(false);}}>Features</div>
+            <div className={styles.mobileNavItem} onClick={() => {navigate("/#how"); setIsMobileMenuOpen(false);}}>How It Works</div>
+            <div className={styles.mobileNavItem} onClick={() => {navigate("/#contact"); setIsMobileMenuOpen(false);}}>Contact</div>
           </div>
         </div>
       </div>
@@ -214,27 +249,22 @@ function InputDesign() {
                 />
                 <button
                   className={styles.submitButton}
-                  disabled={submitted}
+                  disabled={submitted || !inputValue.trim() || success}
                   onClick={handleSubmit}
                   style={{
-                    backgroundColor: submitted
-                      ? "transparent"
-                      : "rgba(0, 0, 0, 0.05)",
+                    backgroundColor: submitted ? "transparent" : "rgba(0, 0, 0, 0.05)",
                   }}
                 >
                   {submitted ? (
                     <div className={styles.loadingIndicator} />
+                  ) : success ? (
+                    <i className="ti ti-circle-check-filled" style={{ fontSize: 20 }} />
                   ) : (
-                    <i
-                      className={`ti ti-corner-up-right ${styles.submitIcon}`}
-                      style={{ opacity: inputValue ? 1 : 0.3 }}
-                    />
+                    <i className={`ti ti-corner-up-right ${styles.submitIcon}`} style={{ opacity: inputValue ? 1 : 0.3 }} />
                   )}
                 </button>
               </div>
-              <p className={styles.statusText}>
-                {submitted ? (<span>AI is thinking...</span>) : (<span>Ready to submit!</span>)}
-              </p>
+              <p className={styles.statusText}>{status}</p>
             </div>
           </div>
         </div>

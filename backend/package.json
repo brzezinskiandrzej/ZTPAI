@@ -9,7 +9,8 @@
     "migration:generate": "typeorm-ts-node-commonjs migration:generate -- -d src/database/config/data-source.ts",
     "migration:run": "typeorm-ts-node-commonjs migration:run -- -d src/database/config/data-source.ts",
     "clean": "rimraf dist",
-    "prebuild": "npm run clean"
+    "prebuild": "npm run clean",
+    "worker": "ts-node src/queues/admin.events.consumer.ts"
   },
   "jest": {
     "preset": "ts-jest",
@@ -22,6 +23,7 @@
     ]
   },
   "dependencies": {
+    "amqplib": "^0.10.8",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
@@ -29,13 +31,16 @@
     "dotenv": "^16.5.0",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
+    "openai": "^5.0.1",
     "pg": "^8.14.1",
     "reflect-metadata": "^0.2.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
-    "typeorm": "^0.3.21"
+    "typeorm": "^0.3.21",
+    "zod": "^3.25.46"
   },
   "devDependencies": {
+    "@types/amqplib": "^0.10.7",
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",
