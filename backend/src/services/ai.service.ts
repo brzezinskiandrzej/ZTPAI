@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { z } from "zod";
 import { MOOD_PROFILES } from "../ai/moodProfiles";
+import { publishAdminEvent } from "../queues/publish";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 /* ---- 1) lista dozwolonych nastrojów ---- */
@@ -57,7 +58,7 @@ export async function analyseMood(text: string): Promise<MoodParams> {
   /** 2⃣ uzupełniamy z tabeli profili */
   const profile = MOOD_PROFILES[raw.mood];
 
-
+ 
 
   return {
     mood       : raw.mood,

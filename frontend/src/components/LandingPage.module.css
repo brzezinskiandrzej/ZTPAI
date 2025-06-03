@@ -27,17 +27,7 @@
 }
 
 /* --- menu --- */
-.navMenu {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-}
 
-.navItem {
-  color: #ffffff;
-  font-size: 16px;
-  cursor: pointer;
-}
 
 .ctaButton {
   background-color: #e5a853;
@@ -86,13 +76,7 @@
 .rotateUp {
   transform: rotate(-45deg) translate(6px, -6px);
 }
-.adminItem{
-  background-color:#e5a853; 
-  color:#1a1f2e;
-  padding:8px 16px;
-  border-radius:6px;
-  font-weight:600;
-}
+
 /* Hero Section */
 .heroSection {
   flex: 1;

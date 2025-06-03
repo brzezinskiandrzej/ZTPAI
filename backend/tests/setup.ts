@@ -1,49 +1,57 @@
-// tests/setup.ts
+import jwt from "jsonwebtoken";
+jest.mock("swagger-jsdoc", () => {
+  return () => ({ });                 
+});
 import { AppDataSource } from "../src/database/config/data-source";
 import { User } from "../src/models/User";
-import { Playlist } from "../src/models/Playlist";
 import { Song } from "../src/models/Song";
+import { Playlist } from "../src/models/Playlist";
 import { PlaylistSong } from "../src/models/PlaylistSong";
 
-export let fixtures: {
-  user: User;
-  song: Song;
-};
+export interface Fixtures {
+  user     : User;
+  token    : string;
+  song     : Song;
+  playlist : Playlist;
+}
+
+export let fx: Fixtures;                          // ⬅ export z aliasem „fx”
 
 beforeAll(async () => {
   await AppDataSource.initialize();
-  await AppDataSource.synchronize(true);   
+  await AppDataSource.synchronize(true);
 
-  const userRepo = AppDataSource.getRepository(User);
-  const songRepo = AppDataSource.getRepository(Song);
-  const plRepo   = AppDataSource.getRepository(Playlist);
-  const psRepo   = AppDataSource.getRepository(PlaylistSong);
+  const user = await AppDataSource.getRepository(User).save(
+    AppDataSource.getRepository(User).create({
+      username: "Tester",
+      email: "t@example.com",
+      password_hash: "hash"
+    })
+  );
 
-  const user = await userRepo.save(userRepo.create({
-    username: "TestUser",
-    email: "test@example.com",
-    password_hash: "hash"
-  }));
+  const song = await AppDataSource.getRepository(Song).save(
+    AppDataSource.getRepository(Song).create({
+      title: "Seed track",
+      audio_url: "http://example.com/seed.mp3",
+      valence: .5, energy: .5, tempo: 120, musical_key: "C", genres: "pop"
+    })
+  );
 
-  const song = await songRepo.save(songRepo.create({
-    title: "Test song",
-    audio_url: "https://www.mfiles.co.uk/mp3-downloads/gs-cd-track2.mp3"
-  }));
+  const playlist = await AppDataSource.getRepository(Playlist).save(
+    AppDataSource.getRepository(Playlist).create({ name: "Seed", owner: user })
+  );
 
-  const playlist = await plRepo.save(plRepo.create({
-    name: "Test playlist",
-    owner: user
-  }));
+  await AppDataSource.getRepository(PlaylistSong).save(
+    { playlist, song, order_index: 1 }
+  );
 
-  await psRepo.save(psRepo.create({
-    playlist,
-    song,
-    order_index: 1
-  }));
+  const token = jwt.sign(
+    { sub: user.user_id, role: "user", username: user.username },
+    process.env.ACCESS_TOKEN_SECRET!,
+    { expiresIn: "1h" }
+  );
 
-  fixtures = { user, song };          
+  fx = { user, token, song, playlist };
 });
 
-afterAll(async () => {
-  await AppDataSource.destroy();
-});
+afterAll(() => AppDataSource.destroy());

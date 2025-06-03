@@ -5,6 +5,7 @@ import styles from "./LandingPage.module.css";
 import { useAuth }        from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import NavMenu from "./NavMenu";
 
 function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -85,24 +86,13 @@ function LandingPage() {
             />
           </div>
 
-          <nav
-            className={`${styles.navMenu} ${
-              isMenuOpen ? styles.menuOpen : ""
-            }`}
-          >
-            <div className={styles.navItem} onClick={() => scrollTo("home")}>Home</div>
-            <div className={styles.navItem} onClick={() => scrollTo("features")}>Features</div>
-            <div className={styles.navItem} onClick={() => scrollTo("how")}>How It Works</div>
-            <div className={styles.navItem} onClick={() => scrollTo("contact")}>Contact</div>
-            {user?.role === "admin" && (
-              <div
-                className={`${styles.navItem} ${styles.adminItem}`}
-                onClick={() => navigate("/admin")}
-              >
-                Admin panel
-              </div>
-            )}
-          </nav>
+          <NavMenu
+    scrollTo={scrollTo}
+    navigate={navigate}
+    user={user}
+    isMenuOpen={isMenuOpen}
+    toggleMenu={toggleMenu}
+  />
 
           <button
             className={styles.menuToggle}

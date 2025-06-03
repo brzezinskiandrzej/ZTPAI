@@ -1,8 +1,9 @@
 import { useAuth } from "../context/AuthContext";
 
+
 export function useFetchWithAuth() {
   const { token } = useAuth();
-
+  
   return async (url, options = {}) => {
     try {
       const response = await fetch(url, {
@@ -16,6 +17,14 @@ export function useFetchWithAuth() {
       });
 
       let data = null;
+      if (response.status === 403) {
+        window.location.replace("/403"); 
+        return Promise.reject(new Error("Forbidden"));
+      }
+      if (response.status === 404) {
+        window.location.replace("/404");   
+        return Promise.reject(new Error("Not found"));
+      }
       if (response.status !== 204 && response.status !== 205) {
         const text = await response.text();
         data = text ? JSON.parse(text) : null;
@@ -40,4 +49,5 @@ export function useFetchWithAuth() {
       throw error;
     }
   };
+  
 }

@@ -27,10 +27,8 @@ export async function startAdminConsumer() {
 
       ch.ack(msg);
     } catch (err) {
-      console.error("[AMQP] admin.events error:", err);
-      ch.nack(msg, false, false); // dead-letter
+      ch.nack(msg, false, false); 
     }
   });
 
-  console.log("[AMQP] consumer admin.events ✓ listening");
 }

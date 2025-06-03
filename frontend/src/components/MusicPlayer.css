@@ -301,4 +301,10 @@
     gap: 4px;
     margin-right: 12px;
   }
+  .nextBtn,.prevbtn, .shuffleBtn, .repeatBtn{
+    color:white;
+    background: none;
+    border: none;
+
+  }
 }

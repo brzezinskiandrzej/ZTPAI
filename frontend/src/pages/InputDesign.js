@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useNavigate  } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"; 
 import styles from "./InputDesign.module.css";
+import NavMenu from "../components/NavMenu";
 
 function InputDesign() {
   const [touchStart, setTouchStart] = useState(0);
@@ -162,10 +163,10 @@ function InputDesign() {
           />
         </div>
         <nav className={styles.navMenu}>
-          <div className={styles.navItem} onClick={() => navigate("/#home")} >Home</div>
-          <div className={styles.navItem} onClick={() => navigate("/#features")}>Features</div>
-          <div className={styles.navItem} onClick={() => navigate("/#how")}>How It Works</div>
-          <div className={styles.navItem} onClick={() => navigate("/#contact")}>Contact</div>
+          <NavMenu
+            mode="hash"              
+            navigate={navigate}
+          />
         </nav>
         <button
           className={styles.menuToggle}

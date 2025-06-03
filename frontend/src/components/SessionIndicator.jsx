@@ -5,8 +5,8 @@ export default function SessionIndicator() {
   const { user, token, signout } = useAuth();
   React.useEffect(() => {
     const timeout = setTimeout(() => {
-      if (user) console.log("✅ Sesja aktywna", user.username);
-      else console.log("⛔ Brak sesji");
+      if (user) ;
+      else ;
     }, 500); 
 
     return () => clearTimeout(timeout);

@@ -18,9 +18,7 @@ const MusicPlayer = ({ song, playlist, currentIndex, onChangeSong }) => {
   useEffect(() => {
     if (song && audioRef.current) {
       const src = song.audio_url || song.url || "";
-      console.log("Setting audio source:", src);
       if (!src || !src.startsWith("http")) {
-        console.error("Invalid audio URL:", src);
       }
       audioRef.current.src = src || "";
       audioRef.current.currentTime = 0;

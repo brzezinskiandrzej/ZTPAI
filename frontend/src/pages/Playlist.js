@@ -42,7 +42,6 @@ function Playlist() {
   }, [userId, user]);
 
   const refreshPlaylist = async () => {
-    console.log("Refreshing playlist...");
     await loadPlaylist();
   };
 

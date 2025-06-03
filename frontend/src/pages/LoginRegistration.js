@@ -135,10 +135,9 @@ function LoginRegistration() {
       sessionStorage.removeItem("MM_BACK");
       navigate(destination, { replace: true });
     }  catch (error) {
-      console.log("Surowy błąd z authService:", error);
+
       
       const parsedError = parseBackendError(error);
-      console.log("Sparsowany błąd:", parsedError);
 
       setErrors(prev => ({
         ...prev,

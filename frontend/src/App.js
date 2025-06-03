@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ErrorPage from "./components/ErrorPage";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Playlist from "./pages/Playlist";
 import LandingPage from "./components/LandingPage";
@@ -20,6 +21,14 @@ function App() {
     <Router>
       <div className="app">
         <Routes>
+          <Route
+            path="/403"
+            element={<ErrorPage code={403} message="Forbidden" />}
+          />
+          <Route
+            path="*"
+            element={<ErrorPage code={404} message="Page not found" />}
+          />
           <Route path="/" element={<LandingPage />} />
           <Route path="/input" element={<InputDesign />} />
           <Route path="/admin" element={<AdminPanel />} />

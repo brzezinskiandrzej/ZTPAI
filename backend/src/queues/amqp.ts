@@ -14,11 +14,9 @@ export async function initAmqp(): Promise<amqp.Channel> {
   channel = await conn.createChannel();
 
   conn.on("close", () => {
-    console.warn("[AMQP] connection closed");
     channel = null;
   });
 
-  console.log("[AMQP] connected ✔");
   return channel;
 }
 

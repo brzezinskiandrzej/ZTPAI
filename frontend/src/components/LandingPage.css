@@ -26,17 +26,7 @@
   font-weight: 600;
 }
 
-.nav-menu {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-}
 
-.nav-item {
-  color: #ffffff;
-  font-size: 16px;
-  cursor: pointer;
-}
 
 .cta-button {
   background-color: #e5a853;
