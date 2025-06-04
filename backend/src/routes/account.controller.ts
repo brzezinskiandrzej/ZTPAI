@@ -19,25 +19,22 @@ const plRepo    = () => AppDataSource.getRepository(Playlist);
  * /account:
  *   get:
  *     tags: [Account]
- *     summary: Pobiera dane zalogowanego użytkownika
+ *     summary: Returns the currently logged-in user
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Dane konta
+ *         description: Logged-in user data
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 id:       { type: integer, example: 3 }
- *                 username: { type: string,  example: "john" }
- *                 email:    { type: string,  example: "john@mail.com" }
+ *               $ref: '#/components/schemas/User'
  *       401:
- *         description: Brak autoryzacji
+ *         description: Missing / invalid token
  *         content:
  *           application/json:
- *             schema: { $ref: '#/components/schemas/Error' }
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 accountRouter.get("/", async (req:AuthReq,res)=> {
   const u = await userRepo().findOneBy({ user_id: req.user!.userId });
@@ -49,7 +46,7 @@ accountRouter.get("/", async (req:AuthReq,res)=> {
  * /account:
  *   patch:
  *     tags: [Account]
- *     summary: Aktualizuje nazwę użytkownika lub e-mail
+ *     summary: Updates username and / or e-mail
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -59,25 +56,33 @@ accountRouter.get("/", async (req:AuthReq,res)=> {
  *           schema:
  *             type: object
  *             properties:
- *               username: { type: string, example: "newName" }
- *               email:    { type: string, example: "new@mail.com" }
+ *               username:
+ *                 type: string
+ *                 example: newName
+ *               email:
+ *                 type: string
+ *                 example: new@mail.com
  *     responses:
  *       200:
- *         description: Zaktualizowano
+ *         description: Updated successfully
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 message: { type: string, example: "updated" }
+ *                 message:
+ *                   type: string
+ *                   example: updated
  *                 user:
- *                   type: object
- *                   properties:
- *                     username: { type: string }
- *                     email:    { type: string }
- *       400: { $ref: '#/components/schemas/Error' }
- *       401: { $ref: '#/components/schemas/Error' }
- *       422: { $ref: '#/components/schemas/Error' }
+ *                   $ref: '#/components/schemas/User'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       422:
+ *         $ref: '#/components/responses/Unprocessable'
  */
 accountRouter.patch("/", async (req:AuthReq,res,next)=>{
   try{
@@ -101,7 +106,7 @@ accountRouter.patch("/", async (req:AuthReq,res,next)=>{
  * /account/password:
  *   patch:
  *     tags: [Account]
- *     summary: Zmienia hasło użytkownika
+ *     summary: Changes the user password
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -110,22 +115,29 @@ accountRouter.patch("/", async (req:AuthReq,res,next)=>{
  *         application/json:
  *           schema:
  *             type: object
- *             required: [oldPassword,newPassword]
+ *             required: [oldPassword, newPassword]
  *             properties:
- *               oldPassword: { type: string, format: password }
- *               newPassword: { type: string, format: password }
+ *               oldPassword:
+ *                 type: string
+ *                 format: password
+ *               newPassword:
+ *                 type: string
+ *                 format: password
  *     responses:
  *       200:
- *         description: Hasło zmienione
+ *         description: Password updated
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 message: { type: string, example: "password-updated" }
- *       400: { $ref: '#/components/schemas/Error' }
- *       401: { $ref: '#/components/schemas/Error' }
- *       422: { $ref: '#/components/schemas/Error' }
+ *                 message:
+ *                   type: string
+ *                   example: password-updated
+ *       400: { $ref: '#/components/responses/BadRequest' }
+ *       401: { $ref: '#/components/responses/Unauthorized' }
+ *       404: { $ref: '#/components/responses/NotFound' }
+ *       422: { $ref: '#/components/responses/Unprocessable' }
  */
 accountRouter.patch("/password", async (req:AuthReq,res,next)=>{
   try{
@@ -153,7 +165,7 @@ accountRouter.patch("/password", async (req:AuthReq,res,next)=>{
  * /account/likes:
  *   get:
  *     tags: [Account]
- *     summary: Lista polubionych utworów
+ *     summary: Returns liked tracks
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -164,12 +176,8 @@ accountRouter.patch("/password", async (req:AuthReq,res,next)=>{
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   id:     { type: integer }
- *                   title:  { type: string }
- *                   artist: { type: string }
- *       401: { $ref: '#/components/schemas/Error' }
+ *                 $ref: '#/components/schemas/Track'
+ *       401: { $ref: '#/components/responses/Unauthorized' }
  */
 accountRouter.get("/likes", async (req:AuthReq,res)=>{
   const rows = await likedRepo().find({
@@ -186,7 +194,7 @@ accountRouter.get("/likes", async (req:AuthReq,res)=>{
  * /account/playlists:
  *   get:
  *     tags: [Account]
- *     summary: Play-listy tworzone przez zalogowanego użytkownika
+ *     summary: Returns playlists created by the user
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -197,11 +205,8 @@ accountRouter.get("/likes", async (req:AuthReq,res)=>{
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   id:   { type: integer }
- *                   name: { type: string }
- *       401: { $ref: '#/components/schemas/Error' }
+ *                 $ref: '#/components/schemas/Playlist'
+ *       401: { $ref: '#/components/responses/Unauthorized' }
  */
 accountRouter.get("/playlists", async (req:AuthReq,res)=>{
   const pls = await plRepo().find({ where:{ owner:{ user_id:req.user!.userId }}});

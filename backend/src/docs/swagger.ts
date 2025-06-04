@@ -1,7 +1,11 @@
+
 import swaggerJSDoc from "swagger-jsdoc";
+import { schemas, responses, securitySchemes } from "./common-schemas";
 import path from "path";
 
 export const swaggerSpec = swaggerJSDoc({
+  
+  
   definition: {
     openapi: "3.0.1",
     info: {
@@ -24,79 +28,11 @@ Schemat odpowiedzi błędu:
 \`\`\`
       `.trim()
     },
+    components: { schemas, responses, securitySchemes },
     servers: [{ url: "http://localhost:3000/api" }],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT"
-        }
-      },
-      schemas: {
-        User: {
-          type: "object",
-          properties: {
-            id: { type: "integer", example: 3 },
-            username: { type: "string", example: "admin" },
-            email: { type: "string", example: "admin@mood.com" },
-            role: { type: "string", enum: ["user", "admin"] },
-            created: { type: "string", format: "date-time" }
-          }
-        },
-        Playlist: {
-          type: "object",
-          properties: {
-            id: { type: "integer", example: 12 },
-            name: { type: "string", example: "Morning vibes" },
-            songCount: { type: "integer", example: 24 },
-            created: { type: "string", format: "date-time" },
-            owner: { $ref: "#/components/schemas/User" }
-          }
-        },
-        Track: {
-          type: "object",
-          properties: {
-            id: { type: "integer" },
-            title: { type: "string" },
-            artist: { type: "string" },
-            duration: { type: "string", example: "03:17" },
-            artwork: { type: "string", format: "uri" },
-            playCount: { type: "integer" },
-            isFavorite: { type: "boolean" }
-          }
-        },
-        AdminLog: {
-          type: "object",
-          properties: {
-            id: { type: "integer" },
-            actor: { $ref: "#/components/schemas/User" },
-            action: { type: "string", example: "BAN" },
-            targetId: { type: "integer" },
-            created: { type: "string", format: "date-time" }
-          }
-        },
-        Error: {
-          type: "object",
-          properties: {
-            error: {
-              type: "object",
-              properties: {
-                code:    { type: "string", example: "auth/user-not-found" },
-                message: { type: "string", example: "Nie znaleziono konta…" }
-              },
-              required: ["code", "message"]
-            }
-          },
-          required: ["error"]
-        }
-      
-
-      }
-    },
     security: [{ bearerAuth: [] }]
   },
-
+  
   apis: [
     path.join(__dirname, "../routes/**/*.ts"),
     path.join(__dirname, "../routes/**/*.js")

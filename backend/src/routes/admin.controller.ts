@@ -13,7 +13,7 @@ adminRouter.use(requireAuth, requireRole("admin"));
  * /admin/users:
  *   get:
  *     tags: [Admin]
- *     summary: Lista wszystkich użytkowników
+ *     summary: Returns **all** registered users
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -23,9 +23,10 @@ adminRouter.use(requireAuth, requireRole("admin"));
  *           application/json:
  *             schema:
  *               type: array
- *               items: { $ref: '#/components/schemas/User' }
- *       401: { $ref: '#/components/schemas/Error' }
- *       403: { $ref: '#/components/schemas/Error' }
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ *       401: { $ref: '#/components/responses/Unauthorized' }
+ *       403: { $ref: '#/components/responses/Forbidden' }
  */
 adminRouter.get(
   "/users",
@@ -41,28 +42,39 @@ adminRouter.get(
  * /admin/users/{id}/ban:
  *   patch:
  *     tags: [Admin]
- *     summary: Blokuje lub odblokowuje użytkownika
+ *     summary: Bans / un-bans a user
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema: { type: integer }
- *       - in: query
- *         name: ban
- *         required: true
- *         schema: { type: boolean }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [ban]
+ *             properties:
+ *               ban:
+ *                 type: boolean
+ *                 example: true
  *     responses:
  *       200:
- *         description: Zmieniono status
+ *         description: Status changed
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 userId:   { type: integer }
- *                 isBanned: { type: boolean }
- *       401: { description: Brak autoryzacji }
- *       403: { description: Brak uprawnień }
+ *                 userId:   { type: integer, example: 7 }
+ *                 isBanned: { type: boolean, example: true }
+ *       401: { $ref: '#/components/responses/Unauthorized' }
+ *       403: { $ref: '#/components/responses/Forbidden' }
+ *       404: { $ref: '#/components/responses/NotFound' }
+ *       422: { $ref: '#/components/responses/Unprocessable' }
  */
 adminRouter.patch("/users/:id/ban",
   validateNumericId("id"),
@@ -77,7 +89,7 @@ adminRouter.patch("/users/:id/ban",
  * /admin/users/{id}/password:
  *   patch:
  *     tags: [Admin]
- *     summary: Resetuje hasło użytkownika
+ *     summary: Resets a user password
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -93,11 +105,15 @@ adminRouter.patch("/users/:id/ban",
  *             type: object
  *             required: [newPassword]
  *             properties:
- *               newPassword: { type: string, format: password }
+ *               newPassword:
+ *                 type: string
+ *                 format: password
  *     responses:
- *       204: { description: Zresetowano, brak treści }
- *       401: { $ref: '#/components/schemas/Error' }
- *       403: { $ref: '#/components/schemas/Error' }
+ *       204: { description: Password reset — no content }
+ *       401: { $ref: '#/components/responses/Unauthorized' }
+ *       403: { $ref: '#/components/responses/Forbidden' }
+ *       404: { $ref: '#/components/responses/NotFound' }
+ *       422: { $ref: '#/components/responses/Unprocessable' }
  */
 adminRouter.patch("/users/:id/password",
   validateNumericId("id"),
@@ -111,23 +127,29 @@ adminRouter.patch("/users/:id/password",
  * /admin/playlists:
  *   get:
  *     tags: [Admin]
- *     summary: Lista wszystkich playlist
+ *     summary: Returns all playlists (sortable)
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: sort
  *         schema: { type: string, enum: [date,name,songs] }
- *         description: Pole sortowania
+ *         description: Sort field
  *       - in: query
  *         name: dir
  *         schema: { type: string, enum: [asc,desc] }
- *         description: Kierunek sortowania
+ *         description: Sort direction
  *     responses:
  *       200:
  *         description: OK
- *       401: { $ref: '#/components/schemas/Error' }
- *       403: { $ref: '#/components/schemas/Error' }
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Playlist'
+ *       401: { $ref: '#/components/responses/Unauthorized' }
+ *       403: { $ref: '#/components/responses/Forbidden' }
  */
 adminRouter.get(
   "/playlists",
@@ -148,7 +170,7 @@ adminRouter.get(
  * /admin/playlists/{id}:
  *   delete:
  *     tags: [Admin]
- *     summary: Usuwa playlistę
+ *     summary: Deletes a playlist
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -157,9 +179,10 @@ adminRouter.get(
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       204: { description: Usunięto, brak treści }
- *       401: { $ref: '#/components/schemas/Error' }
- *       403: { $ref: '#/components/schemas/Error' }
+ *       204: { description: Deleted — no content }
+ *       401: { $ref: '#/components/responses/Unauthorized' }
+ *       403: { $ref: '#/components/responses/Forbidden' }
+ *       404: { $ref: '#/components/responses/NotFound' }
  */
 adminRouter.delete("/playlists/:id",
   validateNumericId("id"),
@@ -172,14 +195,20 @@ adminRouter.delete("/playlists/:id",
  * /admin/logs:
  *   get:
  *     tags: [Admin]
- *     summary: Pobiera logi zdarzeń administracyjnych
+ *     summary: Returns admin event logs
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: OK
- *       401: { $ref: '#/components/schemas/Error' }
- *       403: { $ref: '#/components/schemas/Error' }
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *       401: { $ref: '#/components/responses/Unauthorized' }
+ *       403: { $ref: '#/components/responses/Forbidden' }
  */
 adminRouter.get(
   "/logs",
