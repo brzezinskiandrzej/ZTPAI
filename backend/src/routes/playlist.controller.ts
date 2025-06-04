@@ -26,19 +26,17 @@ export const playlistRouter = Router();
 
 /**
  * @openapi
- * /playlist/{userId}:
+ * /playlist/mine:
  *   get:
  *     tags: [Playlist]
- *     summary: Zwraca listę playlist użytkownika
- *     security: [ { bearerAuth: [] } ]
- *     parameters:
- *       - in: path
- *         name: userId
- *         required: true
- *         schema: { type: integer }
+ *     summary: Zwraca listę playlist zalogowanego użytkownika
+ *     security:
+ *       - bearerAuth: []
  *     responses:
- *       200: { description: OK }
- *       403: { $ref: '#/components/schemas/Error' }
+ *       200:
+ *         description: OK
+ *       401: { $ref: '#/components/responses/Unauthorized' }
+ *       403: { $ref: '#/components/responses/Forbidden' }
  */
 playlistRouter.get(
   "/playlist/mine",
@@ -56,8 +54,9 @@ playlistRouter.get(
  * /playlist/{userId}/liked:
  *   get:
  *     tags: [Playlist]
- *     summary: Ulubione utwory użytkownika
- *     security: [ { bearerAuth: [] } ]
+ *     summary: Lista ulubionych utworów wybranego użytkownika
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: userId
@@ -73,12 +72,12 @@ playlistRouter.get(
  *               items:
  *                 type: object
  *                 properties:
- *                   id:     { type: integer }
- *                   title:  { type: string }
- *                   artist: { type: string }
- *                   artwork:{ type: string, nullable: true }
- *       401: { $ref: '#/components/schemas/Error' }
- *       403: { $ref: '#/components/schemas/Error' }
+ *                   id:      { type: integer, example: 42 }
+ *                   title:   { type: string,  example: "Yellow" }
+ *                   artist:  { type: string,  example: "Coldplay" }
+ *                   artwork: { type: string,  nullable: true }
+ *       401: { $ref: '#/components/responses/Unauthorized' }
+ *       403: { $ref: '#/components/responses/Forbidden' }
  */
 playlistRouter.get(
   "/playlist/:userId/liked",
@@ -101,8 +100,9 @@ playlistRouter.get(
  * /playlist/{userId}/{playlistId}:
  *   get:
  *     tags: [Playlist]
- *     summary: Zwraca jedną, konkretną playlistę
- *     security: [ { bearerAuth: [] } ]
+ *     summary: Pobiera pojedynczą playlistę użytkownika
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: userId
@@ -114,8 +114,9 @@ playlistRouter.get(
  *         schema: { type: integer }
  *     responses:
  *       200: { description: OK }
- *       403: { $ref: '#/components/schemas/Error' }
- *       404: { $ref: '#/components/schemas/Error' }
+ *       401: { $ref: '#/components/responses/Unauthorized' }
+ *       403: { $ref: '#/components/responses/Forbidden' }
+ *       404: { $ref: '#/components/responses/NotFound' }
  */
 playlistRouter.get(
   "/playlist/:userId/:playlistId",
@@ -149,8 +150,16 @@ playlistRouter.get(
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: OK }
- *       401: { $ref: '#/components/schemas/Error' }
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 playCount: { type: integer, example: 57 }
+ *       401: { $ref: '#/components/responses/Unauthorized' }
+ *       404: { $ref: '#/components/responses/NotFound' }
  */
 playlistRouter.post(
   "/tracks/:trackId/play",
@@ -170,7 +179,7 @@ playlistRouter.post(
  * /tracks/{trackId}/favorite:
  *   post:
  *     tags: [Playlist]
- *     summary: Dodaje/usuwa ulubione
+ *     summary: Dodaje lub usuwa utwór z ulubionych
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -186,12 +195,24 @@ playlistRouter.post(
  *             type: object
  *             required: [isFavorite]
  *             properties:
- *               isFavorite: { type: boolean }
+ *               isFavorite:
+ *                 type: boolean
+ *                 example: true
  *     responses:
- *       201: { description: Dodano do ulubionych }
- *       200: { description: Usunięto z ulubionych }
- *       401: { $ref: '#/components/schemas/Error' }
- *       422: { $ref: '#/components/schemas/Error' }
+ *       201:
+ *         description: Dodano do ulubionych
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 trackId:    { type: integer }
+ *                 isFavorite: { type: boolean }
+ *       200:
+ *         description: Usunięto z ulubionych
+ *       401: { $ref: '#/components/responses/Unauthorized' }
+ *       422: { $ref: '#/components/responses/Unprocessable' }
+ *       404: { $ref: '#/components/responses/NotFound' }
  */
 playlistRouter.post(
   "/tracks/:trackId/favorite",

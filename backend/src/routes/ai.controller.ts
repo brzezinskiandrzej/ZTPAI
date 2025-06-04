@@ -11,18 +11,36 @@ export const aiRouter = Router();
  * /ai/mood:
  *   post:
  *     tags: [AI]
- *     summary: Zwraca analizę nastroju
+ *     summary: Analizuje tekst i zwraca wykryty nastrój + tworzy dopasowaną playlistę
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             properties: { text: { type: string } }
+ *             required: [text]
+ *             properties:
+ *               text:
+ *                 type: string
+ *                 minLength: 10
+ *                 example: "I feel excited and full of energy today!"
  *     responses:
- *       200: { description: OK }
- *       400: { description: Brak tekstu / zbyt krótki opis }
- *       422: { description: Niewłaściwy mood }
+ *       201:
+ *         description: OK — mood wykryty i playlist utworzona
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mood:        { type: string, example: "happy" }
+ *                 confidence:  { type: number, format: float, example: 0.86 }
+ *                 playlistId:  { type: integer, example: 12 }
+ *                 userId:      { type: integer, example: 5 }
+ *       400: { $ref: '#/components/responses/BadRequest' }
+ *       401: { $ref: '#/components/responses/Unauthorized' }
+ *       422: { $ref: '#/components/responses/Unprocessable' }
  */
 aiRouter.post("/mood", requireAuth, async (req, res, next) => {
   try {

@@ -19,20 +19,24 @@ const userRepo = () => AppDataSource.getRepository(User);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/User'
+ *             type: object
+ *             required: [username,email,password]
+ *             properties:
+ *               username: { type: string, example: "Alice" }
+ *               email:    { type: string, format: email, example: "alice@mail.com" }
+ *               password: { type: string, format: password, example: "P@ssw0rd!" }
  *     responses:
  *       201:
- *         description: Utworzono
+ *         description: Konto utworzone
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
- *       400:
- *         description: Walidacja nie powiodła się
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               type: object
+ *               properties:
+ *                 message: { type: string, example: "Account created" }
+ *       400: { $ref: '#/components/responses/BadRequest' }
+ *       409: { $ref: '#/components/responses/Conflict' }
+ *       422: { $ref: '#/components/responses/Unprocessable' }
  */
 authRouter.post("/register", async (req, res, next) => {
   try {
@@ -97,7 +101,7 @@ authRouter.post("/register", async (req, res, next) => {
  * /auth/login:
  *   post:
  *     tags: [Auth]
- *     summary: Logowanie użytkownika
+ *     summary: Logowanie
  *     requestBody:
  *       required: true
  *       content:
@@ -117,11 +121,11 @@ authRouter.post("/register", async (req, res, next) => {
  *               type: object
  *               properties:
  *                 accessToken: { type: string }
- *                 user:
- *                   $ref: '#/components/schemas/User'
- *       400: { $ref: '#/components/schemas/Error' }
- *       401: { $ref: '#/components/schemas/Error' }
- *       404: { $ref: '#/components/schemas/Error' }
+ *                 user:        { $ref: '#/components/schemas/User' }
+ *       400: { $ref: '#/components/responses/BadRequest' }
+ *       401: { $ref: '#/components/responses/Unauthorized' }
+ *       403: { $ref: '#/components/responses/Forbidden' }
+ *       404: { $ref: '#/components/responses/NotFound' }
  */
 authRouter.post("/login", async (req, res, next) => {
   try {
@@ -181,12 +185,11 @@ authRouter.post("/login", async (req, res, next) => {
  * /auth/refresh:
  *   post:
  *     tags: [Auth]
- *     summary: Odświeża access-token (wymaga refresh-token w cookie)
+ *     summary: Odświeża token dostępu (na podstawie ciasteczka refreshToken)
  *     responses:
- *       200:
- *         description: Nowy access-token
- *       401: { $ref: '#/components/schemas/Error' }
- *       404: { $ref: '#/components/schemas/Error' }
+ *       200: { description: OK }
+ *       401: { $ref: '#/components/responses/Unauthorized' }
+ *       404: { $ref: '#/components/responses/NotFound' }
  */
 authRouter.post("/refresh", async (req, res, next) => {
   try {
@@ -228,9 +231,9 @@ authRouter.post("/refresh", async (req, res, next) => {
  * /auth/logout:
  *   post:
  *     tags: [Auth]
- *     summary: Wylogowanie (czyści ciasteczko refreshToken)
+ *     summary: Wylogowanie (czyści refreshToken)
  *     responses:
- *       204: { description: Wylogowano, brak treści }
+ *       204: { description: Wylogowano — brak treści }
  */
 authRouter.post("/logout", (_req, res) => {
   res.clearCookie("refreshToken", { httpOnly: true, sameSite: "strict" });
