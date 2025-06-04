@@ -33,27 +33,26 @@ aiRouter.post("/mood", requireAuth, async (req, res, next) => {
         error: { code: "ai/too-short", message: "Describe your feelings in more detail." }
       });
 
-    /* -------- 1) analiza nastroju -------- */
-    const moodData = await analyseMood(text);          // { mood, valence, energy, … }
+    const moodData = await analyseMood(text);        
     await publishAdminEvent(
-        req.user!.userId,          // actor
-        "AI_DETECTION",            // action
-        null,                      // targetId – brak
-        { prompt: text.trim(), mood: moodData.mood }   // meta
+        req.user!.userId,         
+        "AI_DETECTION",            
+        null,                    
+        { prompt: text.trim(), mood: moodData.mood }  
     );
 
-    /* -------- 2) walidacja nastroju -------- */
+
     if (!MOODS.includes(moodData.mood as any))
       return res.status(422).json({
         error: { code: "ai/unsupported-mood", message: "Unsupported mood returned by AI" }
       });
 
-    /* -------- 3) tworzymy (lub pobieramy) playlistę -------- */
+
     const playlistId = await generatePlaylistForMood(req.user!.userId, moodData);
 
-    /* -------- 4) finalna odpowiedź -------- */
+
     res.status(201).json({
-      ...moodData,             // ← rozpakowujemy, dzięki czemu `mood` jest w top-level
+      ...moodData,       
       playlistId,
       userId: req.user!.userId
     });
