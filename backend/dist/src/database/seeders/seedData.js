@@ -20,7 +20,6 @@ const PlaylistSong_1 = require("../../models/PlaylistSong");
 function seedData() {
     return __awaiter(this, void 0, void 0, function* () {
         yield data_source_1.AppDataSource.initialize();
-        console.log("Data Source initialized... seeding data now.");
         const userRepo = data_source_1.AppDataSource.getRepository(User_1.User);
         const andrew = userRepo.create({
             username: "Andrew",
@@ -128,7 +127,6 @@ function seedData() {
             });
             yield psRepo.save(ps);
         }
-        console.log("Seeding done!");
         yield data_source_1.AppDataSource.destroy();
     });
 }

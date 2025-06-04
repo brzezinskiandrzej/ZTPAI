@@ -16,5 +16,5 @@ const app_1 = require("./app");
     yield data_source_1.AppDataSource.initialize();
     app_1.app.set("dataSource", data_source_1.AppDataSource); // dla testów
     const PORT = (_a = process.env.PORT) !== null && _a !== void 0 ? _a : 3000;
-    app_1.app.listen(PORT, () => console.log(`Server @${PORT}`));
+    app_1.app.listen(PORT);
 }))();

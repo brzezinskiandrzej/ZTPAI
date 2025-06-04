@@ -4,9 +4,9 @@ import { initQueues } from "./queues";
 import { startAdminConsumer }   from "./queues/admin.events.consumer";
 (async () => {
   await AppDataSource.initialize();
-  app.set("dataSource", AppDataSource);          // dla testów
+  app.set("dataSource", AppDataSource);      
   const PORT = process.env.PORT ?? 3000;
-  app.listen(PORT, () => console.log(`Server @${PORT}`));
+  app.listen(PORT);
   await initQueues();
   startAdminConsumer(); 
 })();

@@ -15,12 +15,7 @@ export default function errorHandler(
     stack: err.stack,
     isAppError: err instanceof AppError
   });
-  console.log('Error details:', {
-    url: req.originalUrl,
-    method: req.method,
-    error: err.message,
-    stack: err.stack
-  });
+  
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
       error: {
@@ -31,8 +26,6 @@ export default function errorHandler(
     });
   }
 
-  // Dla nieoczekiwanych błędów
-  console.error("Unhandled error:", err);
   res.status(500).json({
     error: {
       code: "internal-error",

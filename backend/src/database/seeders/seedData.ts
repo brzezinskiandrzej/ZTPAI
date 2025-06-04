@@ -8,7 +8,6 @@ import { PlaylistSong } from "../../models/PlaylistSong";
 
 async function seedData() {
   await AppDataSource.initialize();
-  console.log("Data Source initialized... seeding data now.");
 
   const userRepo = AppDataSource.getRepository(User);
 
@@ -136,7 +135,6 @@ async function seedData() {
     await psRepo.save(ps);
   }
 
-  console.log("Seeding done!");
   await AppDataSource.destroy();
 }
 
