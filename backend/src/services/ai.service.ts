@@ -43,7 +43,7 @@ No other keys, no comments, no explanations.
 
 export async function analyseMood(text: string): Promise<MoodParams> {
   const resp = await openai.chat.completions.create({
-    model: process.env.OPENAI_MODEL!, // np gpt-3.5-turbo-0125
+    model: process.env.OPENAI_MODEL!, 
     temperature: 0.0,
     messages: [
       { role: "system", content: systemPrompt },
@@ -52,10 +52,10 @@ export async function analyseMood(text: string): Promise<MoodParams> {
     response_format: { type: "json_object" },
   });
 
-  /** 1⃣ walidujemy JSON */
+
   const raw = RawSchema.parse(JSON.parse(resp.choices[0].message.content!));
 
-  /** 2⃣ uzupełniamy z tabeli profili */
+
   const profile = MOOD_PROFILES[raw.mood];
 
  

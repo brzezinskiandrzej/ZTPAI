@@ -22,11 +22,11 @@ function MyAccount() {
 
   /* ---------- init ---------- */
   useEffect(()=>{ (async ()=>{
-      const p = await api.getProfile();          // GET /api/account
+      const p = await api.getProfile();          
       setProfile(p);
       setForm(f=>({ ...f, username:p.username, email:p.email }));
-      setLikes(await api.getLikes());            // GET /api/account/likes
-      setSaved(await api.getSaved());            // GET /api/account/playlists
+      setLikes(await api.getLikes());            
+      setSaved(await api.getSaved());            
       setSaved(await api.getSavedPlaylists());
   })(); },[]);
 
@@ -36,7 +36,7 @@ function MyAccount() {
   const onChange   = e   => setForm({ ...form, [e.target.name]:e.target.value });
 
   const saveField  = async fld =>{
-    await api.update({ [fld]: form[fld] });      // PATCH /api/account
+    await api.update({ [fld]: form[fld] });      
     setProfile(p=>({ ...p, [fld]:form[fld] }));
     cancelEdit(fld);
   };

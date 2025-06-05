@@ -9,7 +9,6 @@ import AdminPanel from "./pages/AdminPanel";
 import MyAccount from "./components/MyAccount";
 import LoginRegistration from "./pages/LoginRegistration";
 import PrivateRoute      from "./components/PrivateRoute";
-import SessionIndicator from "./components/SessionIndicator"; 
 import RequireRole from "./components/RequireRole"; 
 
 import { Navigate } from "react-router-dom";
@@ -65,7 +64,7 @@ function App() {
         </Routes>
       </div>
     </Router>
-    <SessionIndicator/>
+    
     </>
   );
 }

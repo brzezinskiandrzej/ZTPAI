@@ -9,44 +9,38 @@ import { MOOD_PROFILES }  from "../ai/moodProfiles";
 
 interface ScoredSong { song: Song; score: number; }
 
-/** Zwraca id nowo-utworzonej playlisty */
 export async function generatePlaylistForMood(
   userId: number,
   mood: MoodParams
 ): Promise<number> {
-  /* ---------- 1. profil docelowy ---------- */
+
   const p = MOOD_PROFILES[mood.mood];
 
-  /* ---------- 2. pobierz wszystkie utwory ---------- */
   const songs = await AppDataSource.getRepository(Song).find();
 
-  /* ---------- 3. oceń każdy utwór ---------- */
   const scored: ScoredSong[] = songs.map((s) => {
     let score = 0;
 
-    /* valence / energy – dwa punkty za pełne trafienie */
+
     if (s.valence >= p.valence[0] && s.valence <= p.valence[1]) score += 2;
     if (s.energy  >= p.energy [0] && s.energy  <= p.energy [1]) score += 2;
 
-    /* tempo – 1 pkt */
+
     if (s.tempo   >= p.tempo  [0] && s.tempo   <= p.tempo  [1]) score += 1;
 
-    /* gatunek – 1 pkt, porównujemy ciągi znaków */
     if (p.genres.some((g) => s.genres?.toLowerCase().includes(g))) score += 1;
 
-    /* tonacja – 1 pkt */
     if (p.keys.includes(s.musical_key)) score += 1;
 
     return { song: s, score };
   });
 
-  /* ---------- 4. sortowanie malejąco + losowy tie-break ---------- */
   scored.sort((a, b) => {
     if (b.score !== a.score) return b.score - a.score;
     return Math.random() - 0.5;
   });
 
-  /* ---------- 5. top-5; jeśli za mało → dobierz losowe ---------- */
+
   let top = scored.filter(s => s.score > 0).slice(0, 5).map(s => s.song);
 
   if (top.length < 5) {
@@ -57,7 +51,6 @@ export async function generatePlaylistForMood(
     }
   }
 
-  /* ---------- 6. zapisz playlistę ---------- */
   const user = await AppDataSource
     .getRepository(User)
     .findOneByOrFail({ user_id: userId });

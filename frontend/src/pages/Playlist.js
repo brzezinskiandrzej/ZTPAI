@@ -106,9 +106,9 @@ function Playlist() {
           />
         </div>
         <nav className="main-nav">
-          <div className="nav-item">Playlists</div>
+          <div className="nav-item" onClick={() => navigate("/account")}>Playlists</div>
           <div className="nav-item mood-check" onClick={refreshPlaylist}>Mood Check</div>
-          <div className="nav-item">Saved</div>
+          <div className="nav-item" onClick={() => navigate("/account")}>Saved</div>
         </nav>
         <div className="user-avatar" onClick={() => navigate("/account")}></div>
       </header>

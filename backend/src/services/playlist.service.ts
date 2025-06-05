@@ -111,15 +111,7 @@ export async function getSavedPlaylists(ownerId:number){
     .groupBy("p.playlist_id")
     .orderBy("p.created_at", "DESC")
     .getRawMany();
-  if (rows.length === 0)
-    throw new AppError(
-      404,
-      "playlist/none-found",
-      "Użytkownik nie ma zapisanych playlist",
-      "userId"
-    );
-
-  return rows;  
+  return rows.map(toDto); 
 }
 
 // na końcu pliku – nowa funkcja
@@ -151,4 +143,8 @@ export async function getLikedSongs(userId: number) {
   return { username: user.username, playlistName: "Liked songs", tracks };
 }
 
+
+function toDto(value: any, index: number, array: any[]): unknown {
+  throw new Error("Function not implemented.");
+}
 
